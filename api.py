@@ -1,8 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import feedparser
+import os
 import re
+import secrets
+import threading
+from datetime import datetime, timezone
 
 app = FastAPI(title="Space Cyber Crew API")
 
@@ -131,3 +135,80 @@ def generate_brief(signal: SignalInput):
         "source": signal.source,
         "link": signal.link
     }
+
+
+# ---------------------------------------------------------------------------
+# Agent pipeline endpoints
+#
+# These run the real CrewAI pipeline (crew.py) on the documents in sources/.
+# The request body does not carry any document text, so the API does not
+# open a new prompt-injection channel: the Collector still reads only the
+# fixed sources/ folder, exactly as when running main.py locally.
+#
+# Running the crew costs OpenAI credits, so /api/run-crew requires a secret
+# access key sent in the X-Access-Key header. Set CREW_ACCESS_KEY on the
+# server. If it is not set, the endpoint refuses every request (fails closed).
+# ---------------------------------------------------------------------------
+
+BRIEF_PATH = "output/daily_brief.md"
+_crew_lock = threading.Lock()
+_last_run = {"status": "never run", "finished_at": None, "error": None}
+
+
+def _check_access_key(provided: str | None):
+    expected = os.getenv("CREW_ACCESS_KEY")
+    if not expected:
+        raise HTTPException(status_code=503, detail="Crew runs are disabled: CREW_ACCESS_KEY is not set on the server.")
+    if not provided or not secrets.compare_digest(provided, expected):
+        raise HTTPException(status_code=401, detail="Missing or incorrect access key.")
+
+
+def _clean_brief(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1] if "\n" in text else ""
+    if text.endswith("```"):
+        text = text[:-3]
+    return text.strip()
+
+
+@app.post("/api/run-crew")
+def run_crew(x_access_key: str | None = Header(default=None)):
+    """Run the Collector -> Analyst -> Writer pipeline. Takes 1-5 minutes."""
+    _check_access_key(x_access_key)
+
+    if not (os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")):
+        raise HTTPException(status_code=503, detail="No model API key is set on the server (OPENAI_API_KEY).")
+
+    # One run at a time: runs share the output file and cost money.
+    if not _crew_lock.acquire(blocking=False):
+        raise HTTPException(status_code=409, detail="A crew run is already in progress. Try again in a few minutes.")
+
+    try:
+        _last_run.update(status="running", error=None)
+        os.makedirs("output", exist_ok=True)
+
+        from crew import build_crew  # imported here so the API starts fast
+        result = build_crew().kickoff()
+
+        brief = getattr(result, "raw", None) or str(result)
+        finished = datetime.now(timezone.utc).isoformat()
+        _last_run.update(status="completed", finished_at=finished)
+        return {"status": "completed", "finished_at": finished, "brief_markdown": _clean_brief(brief)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        _last_run.update(status="failed", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Crew run failed: {e}")
+    finally:
+        _crew_lock.release()
+
+
+@app.get("/api/latest-brief")
+def latest_brief():
+    """Return the most recent brief without running the crew (free)."""
+    if not os.path.isfile(BRIEF_PATH):
+        raise HTTPException(status_code=404, detail="No brief has been generated yet.")
+    with open(BRIEF_PATH, "r", encoding="utf-8") as f:
+        brief = f.read()
+    return {"last_run": _last_run, "brief_markdown": _clean_brief(brief)}
