@@ -1,6 +1,10 @@
+# Agent pipeline (main.py, crew.py)
+crewai>=0.80.0
+python-dotenv
+pyyaml
+
+# Optional ingestion API (api.py)
 fastapi
 uvicorn
 feedparser
 pydantic
-python-dotenv
-pyyaml
