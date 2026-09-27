@@ -21,7 +21,7 @@ Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, a
 
 ## Quick start
 
-Requires Python 3.10 or newer and an OpenAI API key.
+Requires Python 3.10 to 3.13 (CrewAI does not yet support 3.14) and an OpenAI API key.
 
 ```bash
 git clone https://github.com/ktaki8/space-cyber-brief-crew.git
@@ -37,14 +37,70 @@ The brief is written to `output/daily_brief.md`.
 
 **Model:** unless you set `MODEL` in `.env` (for example `MODEL=gpt-4o-mini`), CrewAI uses its default model, which depends on your CrewAI version.
 
+Keep `.env` private and never commit it. The pipeline checks for either `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`.
+
+### Windows (PowerShell)
+
+From the project folder:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+notepad .env                     # add your key after OPENAI_API_KEY= and save
+python main.py
+Get-Content .\output\daily_brief.md
+```
+
+If PowerShell blocks activation, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` and activate again.
+
 ## Sample sources
 
 The three documents in `sources/` are **illustrative samples written for testing** (one each for the space, ground, and link segments). Identifiers in them, such as CVE numbers, are not real. Replace them with your own documents to use the pipeline on real reporting.
 
-## Optional: ingestion API
+## Web API
 
-`api.py` is a separate FastAPI prototype that pulls CISA advisory feeds and ranks items by keyword matches. It is not connected to the agent pipeline. Run it with `uvicorn api:app --reload`.
+`api.py` is a FastAPI service. Run it locally with `uvicorn api:app --reload` and open `http://127.0.0.1:8000/docs` to try the endpoints.
 
-## Author
+| Endpoint | What it does | Uses an LLM? |
+| --- | --- | --- |
+| `GET /api/signals` | Pulls CISA advisory feeds and ranks items by keyword matches | No |
+| `POST /api/generate-brief` | Rule-based triage draft for a single submitted signal | No |
+| `POST /api/run-crew` | Runs the full Collector → Analyst → Writer pipeline on `sources/` and returns the brief | Yes |
+| `GET /api/latest-brief` | Returns the most recent brief without running the crew | No |
 
-Khadija Taki, MSISPM, Carnegie Mellon University (Heinz College). Co-author of the accompanying paper: Brian G. Rodiles Delgado, University of West Florida.
+`/api/run-crew` requires a secret access key in the `X-Access-Key` header, matched against the `CREW_ACCESS_KEY` environment variable. If that variable is not set, the endpoint refuses all requests. It accepts no document text, so the API adds no new injection channel: the Collector still reads only the fixed `sources/` folder. Only one run can happen at a time.
+
+The keyword and rule-based endpoints are triage aids, not validated intelligence.
+
+## Deployment
+
+The API is deployed on Render (`uvicorn api:app --host 0.0.0.0 --port $PORT`). Set these environment variables on the service, never in the repository:
+
+- `PYTHON_VERSION`: a 3.13.x release, for example `3.13.7`
+- `OPENAI_API_KEY`: the model provider key
+- `MODEL`: for example `gpt-4o-mini`
+- `CREW_ACCESS_KEY`: a long random secret for `/api/run-crew`
+
+On Render's free plan the filesystem resets on each restart, so download any brief you want to keep.
+
+## Repository layout
+
+```text
+config/        CrewAI agent and task prompts
+output/        Generated brief output
+sources/       Approved local text/Markdown source corpus
+tools/         File reader tool used by the Collector
+api.py         FastAPI service (triage endpoints and crew runner)
+crew.py        Three-stage sequential agent workflow
+guardrails.py  Shared operational prompt rules
+main.py        Local workflow entry point
+```
+
+## Authors
+
+**Khadija Taki**, MSISPM, Carnegie Mellon University (Heinz College). Cybersecurity, AI, and space systems security.
+
+**Brian G. Rodiles Delgado**, Cybersecurity Management MBA, University of West Florida. Industrial control systems (ICS), operational technology (OT), and agentic infrastructure and evaluations.
