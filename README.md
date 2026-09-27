@@ -1,81 +1,50 @@
-# Space Cyber Brief Crew
+# Space-Cyber Brief Crew
 
-AI-powered multi-agent cyber threat intelligence briefing pipeline built with CrewAI.
+A governed multi-agent pipeline, built with CrewAI, that turns a folder of space-domain cyber threat documents into a structured intelligence brief. It accompanies the paper *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* (Taki and Rodiles Delgado).
 
-This project explores how autonomous AI agents can monitor open-source intelligence (OSINT) feeds and generate structured cyber threat briefs related to space systems, satellite infrastructure, and critical technologies.
+## How it works
 
----
+Three agents run in sequence:
 
-## Problem
+1. **Collector** reads the documents in `sources/` and extracts structured records (file, title, date, affected systems, summary). It is the only agent with a tool: a read-only file reader locked to the `sources/` folder.
+2. **Analyst** assigns sector, threat type, severity, confidence, and MITRE ATT&CK or ATLAS mappings. It has **no tools**.
+3. **Writer** produces the brief (What Happened, Why It Matters, What to Watch). It has **no tools**.
 
-Cyber threats targeting space infrastructure are increasing. Security teams must monitor multiple intelligence feeds, analyze signals, and produce actionable reports quickly.
+Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, are added to every agent's instructions (attribution, uncertainty labeling, no fabrication, output marking).
 
-Manual workflows are slow and difficult to scale.
+## Security design, and its limits
 
-This project experiments with **AI agent orchestration** to automate threat intelligence collection and briefing.
+- The Analyst and Writer have no tools, so text injected into a source document cannot make them run commands, read files, or access the network.
+- The Collector's file reader takes no arguments. Its folder is fixed in code, and symlinks that point outside `sources/` are skipped.
+- Injected text **can still influence what the agents write**. Tool removal contains the execution channel; it does not make the output trustworthy on its own. Human review of the finished brief is still required.
+- The guardrail rules are instructions to the model, so compliance is probabilistic and has to be measured.
 
----
+## Quick start
 
-## Architecture
+Requires Python 3.10 or newer and an OpenAI API key.
 
-The system uses multiple AI agents:
+```bash
+git clone https://github.com/ktaki8/space-cyber-brief-crew.git
+cd space-cyber-brief-crew
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env             # then add your OpenAI API key to .env
+python main.py
+```
 
-1. **Collector Agent**
-   - Pulls OSINT feeds
-   - Collects cyber threat signals
+The brief is written to `output/daily_brief.md`.
 
-2. **Analysis Agent**
-   - Evaluates relevance
-   - Identifies patterns or emerging threats
+**Model:** unless you set `MODEL` in `.env` (for example `MODEL=gpt-4o-mini`), CrewAI uses its default model, which depends on your CrewAI version.
 
-3. **Briefing Agent**
-   - Generates structured intelligence briefs
-   - Summarizes findings for analysts
+## Sample sources
 
----
+The three documents in `sources/` are **illustrative samples written for testing** (one each for the space, ground, and link segments). Identifiers in them, such as CVE numbers, are not real. Replace them with your own documents to use the pipeline on real reporting.
 
-## Example Output
+## Optional: ingestion API
 
-Daily intelligence brief format:
-
-Threat Area: Satellite communications security
-
-Summary:
-New vulnerabilities reported affecting ground station software used in multiple satellite networks.
-
-Potential Impact:
-Unauthorized command injection and signal disruption.
-
-Recommended Monitoring:
-CISA KEV database  
-Satellite network telemetry anomalies  
-Vendor patch advisories
-
----
-
-## Technology Stack
-
-- Python
-- CrewAI
-- OpenAI APIs
-- OSINT feeds
-- Multi-agent orchestration
-
----
-
-## Future Work
-
-Planned enhancements:
-
-- Integration with CISA KEV feed
-- Satellite vulnerability tracking
-- Automated weekly threat intelligence reports
-- Visualization dashboard
-
----
+`api.py` is a separate FastAPI prototype that pulls CISA advisory feeds and ranks items by keyword matches. It is not connected to the agent pipeline. Run it with `uvicorn api:app --reload`.
 
 ## Author
 
-Khadija Taki  
-MSISPM – Carnegie Mellon University  
-Cybersecurity | AI | Space Systems Security
+Khadija Taki, MSISPM, Carnegie Mellon University (Heinz College). Co-author of the accompanying paper: Brian G. Rodiles Delgado, University of West Florida.
