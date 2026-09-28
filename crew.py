@@ -1,13 +1,26 @@
+import os
 import re
 import yaml
 from datetime import datetime, timezone
-from crewai import Agent, Task, Crew, Process
-from tools.file_reader import FileReaderTool
+from crewai import Agent, Task, Crew, Process, LLM
+from tools.file_reader import FileReaderTool, SOURCES_DIR
 from guardrails import get_guardrail_prompt
+
+DEFAULT_OUTPUT = os.path.join("output", "daily_brief.md")
 
 def load_yaml(path):
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+def strip_code_fence(text):
+    """Remove a ```markdown ... ``` wrapper so the saved brief renders."""
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        stripped = stripped.split("\n", 1)[1] if "\n" in stripped else ""
+        if stripped.rstrip().endswith("```"):
+            stripped = stripped.rstrip()[:-3]
+    return stripped.strip() + "\n"
+
 
 def stamp_brief_date(text, today):
     """Force the brief's date line to the real run date.
@@ -34,13 +47,38 @@ def stamp_brief_date(text, today):
     return f"**Date:** {today}\n\n" + text
 
 
-def build_crew():
+def resolve_sources_dir(sources_dir=None):
+    """Operator choice: argument, then BRIEF_SOURCES_DIR, then sources/."""
+    chosen = sources_dir or os.getenv("BRIEF_SOURCES_DIR") or SOURCES_DIR
+    return os.path.realpath(chosen)
+
+
+def build_llm():
+    """Model from .env. Returns None to let CrewAI use its default.
+
+    MODEL=gpt-4o-mini                       (OpenAI, needs OPENAI_API_KEY)
+    MODEL=ollama/llama3.1:8b                (local, no key, no internet)
+    API_BASE=http://gpu-box:11434           (optional: non-default server)
+    """
+    model = os.getenv("MODEL")
+    if not model:
+        return None
+    kwargs = {"model": model}
+    base_url = os.getenv("API_BASE")
+    if base_url:
+        kwargs["base_url"] = base_url
+    return LLM(**kwargs)
+
+
+def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT):
     today = datetime.now(timezone.utc).strftime("%B %d, %Y")
     agent_configs = load_yaml("config/agents.yaml")
     task_configs = load_yaml("config/tasks.yaml")
     guardrails = get_guardrail_prompt()
 
-    file_reader = FileReaderTool()
+    file_reader = FileReaderTool(sources_dir=resolve_sources_dir(sources_dir))
+    llm = build_llm()
+    llm_kwargs = {"llm": llm} if llm is not None else {}
 
     collector = Agent(
         role=agent_configs["collector"]["role"],
@@ -49,6 +87,7 @@ def build_crew():
         verbose=True,
         allow_delegation=False,
         tools=[file_reader],
+        **llm_kwargs,
     )
 
     analyst = Agent(
@@ -58,6 +97,7 @@ def build_crew():
         verbose=True,
         allow_delegation=False,
         tools=[],
+        **llm_kwargs,
     )
 
     writer = Agent(
@@ -67,6 +107,7 @@ def build_crew():
         verbose=True,
         allow_delegation=False,
         tools=[],
+        **llm_kwargs,
     )
 
     collect_task = Task(
@@ -83,8 +124,8 @@ def build_crew():
     )
 
     def enforce_run_date(output):
-        """Task guardrail: stamp the real date before the brief is saved."""
-        return (True, stamp_brief_date(output.raw, today))
+        """Task guardrail: unwrap code fences and stamp the real date before saving."""
+        return (True, stamp_brief_date(strip_code_fence(output.raw), today))
 
     write_task = Task(
         description=task_configs["write_brief"]["description"]
@@ -93,7 +134,7 @@ def build_crew():
         expected_output=task_configs["write_brief"]["expected_output"],
         agent=writer,
         context=[analyze_task],
-        output_file="output/daily_brief.md",
+        output_file=output_file,
         guardrail=enforce_run_date,
     )
 

@@ -1,8 +1,9 @@
 """Read-only source reader for the Collector agent.
 
-The approved directory is fixed in code. The agent cannot choose a
-different path, so an instruction injected into a source document
-cannot redirect this tool to other folders on the machine.
+The source folder is chosen by the operator when the crew is built (default
+sources/, or --sources / BRIEF_SOURCES_DIR). The agent cannot choose or change
+it: the tool takes no arguments, so an instruction injected into a source
+document cannot redirect this tool to other folders on the machine.
 """
 import os
 from typing import Type
@@ -10,14 +11,35 @@ from typing import Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel
 
-# Absolute path to the approved sources/ folder, resolved once at import.
+# Absolute path to the default sources/ folder, resolved once at import.
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCES_DIR = os.path.realpath(os.path.join(REPO_ROOT, "sources"))
 SUPPORTED_EXTENSIONS = (".txt", ".md")
 
 
+def list_source_files(sources_dir: str) -> list[str]:
+    """Readable source files directly inside sources_dir, sorted.
+
+    Hidden files, unsupported extensions, subfolders, and symlinks that
+    resolve outside the folder are skipped. main.py and check_brief.py use
+    the same rule, so all three agree on what the corpus is.
+    """
+    root = os.path.realpath(sources_dir)
+    if not os.path.isdir(root):
+        return []
+    names = []
+    for filename in sorted(os.listdir(root)):
+        if filename.startswith(".") or not filename.endswith(SUPPORTED_EXTENSIONS):
+            continue
+        filepath = os.path.realpath(os.path.join(root, filename))
+        if os.path.dirname(filepath) != root or not os.path.isfile(filepath):
+            continue
+        names.append(filename)
+    return names
+
+
 class FileReaderInput(BaseModel):
-    """No arguments: the tool always reads the fixed sources/ folder."""
+    """No arguments: the tool always reads the folder fixed at construction."""
 
 
 class FileReaderTool(BaseTool):
@@ -27,20 +49,17 @@ class FileReaderTool(BaseTool):
         "Takes no arguments; the source folder is fixed."
     )
     args_schema: Type[BaseModel] = FileReaderInput
+    sources_dir: str = SOURCES_DIR
 
     def _run(self, **kwargs) -> str:
         # Any arguments the model tries to pass (such as a directory) are ignored.
-        if not os.path.isdir(SOURCES_DIR):
+        root = os.path.realpath(self.sources_dir)
+        if not os.path.isdir(root):
             return "Error: approved sources directory not found."
 
         results = []
-        for filename in sorted(os.listdir(SOURCES_DIR)):
-            if filename.startswith(".") or not filename.endswith(SUPPORTED_EXTENSIONS):
-                continue
-            filepath = os.path.realpath(os.path.join(SOURCES_DIR, filename))
-            # Refuse symlinks or anything that resolves outside sources/.
-            if os.path.dirname(filepath) != SOURCES_DIR or not os.path.isfile(filepath):
-                continue
+        for filename in list_source_files(root):
+            filepath = os.path.join(root, filename)
             try:
                 with open(filepath, "r", encoding="utf-8") as f:
                     content = f.read().strip()

@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it and the accompanying paper."
+title: "Space-Cyber Brief Crew"
+type: software
+license: MIT
+repository-code: "https://github.com/ktaki8/space-cyber-brief-crew"
+authors:
+  - given-names: Khadija
+    family-names: Taki
+    affiliation: "Carnegie Mellon University, Heinz College"
+  - given-names: Brian G.
+    family-names: Rodiles Delgado
+    affiliation: "University of West Florida"
+keywords:
+  - cyber threat intelligence
+  - multi-agent systems
+  - prompt injection
+  - space systems security
+  - ICD 203
+preferred-citation:
+  type: article
+  title: "Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis"
+  authors:
+    - given-names: Khadija
+      family-names: Taki
+    - given-names: Brian G.
+      family-names: Rodiles Delgado
+  year: 2026
+  status: preprint

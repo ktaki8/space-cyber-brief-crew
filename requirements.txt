@@ -1,10 +1,13 @@
-# Agent pipeline (main.py, crew.py)
+# Tested with crewai 1.15.x on Python 3.10-3.13 (crewai does not support 3.14 as of 1.15).
+# Agent pipeline (main.py, crew.py, check_brief.py)
 crewai>=0.80.0
 python-dotenv
 pyyaml
 
-# Optional ingestion API (api.py)
+# Live sources and web API (fetch_sources.py, api.py)
+feedparser
 fastapi
 uvicorn
-feedparser
 pydantic
+
+# Tests: pip install pytest && python -m pytest

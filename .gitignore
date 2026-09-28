@@ -1,1 +1,16 @@
-.env 
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Live feed pulls change daily; commit a snapshot deliberately if you want one
+corpora/live/
+
+# Scratch output from demo and test runs (daily_brief.md stays tracked)
+output/*
+!output/daily_brief.md

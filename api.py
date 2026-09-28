@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import feedparser
 import os
-import re
 import secrets
 import threading
 from datetime import datetime, timezone
+
+from signals import collect_signals
 
 app = FastAPI(title="Space Cyber Crew API")
 
@@ -18,46 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-RSS_FEEDS = [
-    ("CISA Advisories", "https://www.cisa.gov/news-events/cybersecurity-advisories/all.xml"),
-    ("CISA Alerts", "https://www.cisa.gov/cybersecurity-advisories/all.xml"),
-]
-
-KEYWORDS = [
-    "satellite",
-    "space",
-    "ground station",
-    "communications",
-    "network",
-    "infrastructure",
-    "critical infrastructure",
-    "cyber",
-    "vulnerability",
-    "scanning",
-    "vendor",
-    "supply chain",
-    "authentication",
-]
-
 class SignalInput(BaseModel):
     source: str
     title: str
     summary: str
     link: str | None = ""
-
-def clean_html(text: str) -> str:
-    if not text:
-        return ""
-    text = re.sub(r"<[^>]+>", "", text)
-    return " ".join(text.split())
-
-def score_signal(title: str, summary: str) -> int:
-    text = f"{title} {summary}".lower()
-    score = 0
-    for keyword in KEYWORDS:
-        if keyword in text:
-            score += 1
-    return score
 
 @app.get("/")
 def root():
@@ -65,33 +30,24 @@ def root():
 
 @app.get("/api/signals")
 def get_signals():
-    results = []
-
-    for source_name, url in RSS_FEEDS:
-        feed = feedparser.parse(url)
-
-        for entry in feed.entries[:15]:
-            title = clean_html(entry.get("title", ""))
-            summary = clean_html(entry.get("summary", "") or entry.get("description", ""))
-            link = entry.get("link", "")
-
-            score = score_signal(title, summary)
-
-            results.append({
-                "source": source_name,
-                "title": title,
-                "summary": summary[:300] + ("..." if len(summary) > 300 else ""),
-                "link": link,
-                "score": score
-            })
-
-    # Sort by relevance score, then keep top results
-    results = sorted(results, key=lambda x: x["score"], reverse=True)
-
-    # Remove very weak items if possible
-    filtered = [item for item in results if item["score"] > 0]
-
+    """Newest CISA advisories ranked by keyword relevance (no LLM)."""
+    items, errors = collect_signals(per_feed=15)
+    results = [
+        {
+            "source": i["source"],
+            "title": i["title"],
+            "summary": i["summary"][:300] + ("..." if len(i["summary"]) > 300 else ""),
+            "link": i["link"],
+            "score": i["score"],
+            "matched_terms": i["matched_terms"],
+        }
+        for i in items
+    ]
+    filtered = [r for r in results if r["score"] > 0]
+    if errors and not results:
+        raise HTTPException(status_code=502, detail={"message": "All feeds failed.", "errors": errors})
     return filtered[:8] if filtered else results[:8]
+
 
 @app.post("/api/generate-brief")
 def generate_brief(signal: SignalInput):
@@ -151,6 +107,9 @@ def generate_brief(signal: SignalInput):
 # ---------------------------------------------------------------------------
 
 BRIEF_PATH = "output/daily_brief.md"
+# A known-good brief committed to the repo. Served when no run has happened
+# yet, for example after Render's free plan resets the filesystem.
+FALLBACK_BRIEF_PATH = "demo/fallback_brief.md"
 _crew_lock = threading.Lock()
 _last_run = {"status": "never run", "finished_at": None, "error": None}
 
@@ -206,9 +165,14 @@ def run_crew(x_access_key: str | None = Header(default=None)):
 
 @app.get("/api/latest-brief")
 def latest_brief():
-    """Return the most recent brief without running the crew (free)."""
-    if not os.path.isfile(BRIEF_PATH):
-        raise HTTPException(status_code=404, detail="No brief has been generated yet.")
-    with open(BRIEF_PATH, "r", encoding="utf-8") as f:
-        brief = f.read()
-    return {"last_run": _last_run, "brief_markdown": _clean_brief(brief)}
+    """Return the most recent brief without running the crew (free).
+
+    If no brief has been generated on this server, returns the committed
+    fallback brief with "fallback": true, so a demo never shows an empty page.
+    """
+    for path, is_fallback in ((BRIEF_PATH, False), (FALLBACK_BRIEF_PATH, True)):
+        if os.path.isfile(path):
+            with open(path, "r", encoding="utf-8") as f:
+                brief = f.read()
+            return {"last_run": _last_run, "fallback": is_fallback, "brief_markdown": _clean_brief(brief)}
+    raise HTTPException(status_code=404, detail="No brief has been generated yet.")

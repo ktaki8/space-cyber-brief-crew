@@ -25,7 +25,9 @@ write_brief:
   description: >
     Using the analyst assessments, produce a Daily Threat Brief in
     markdown with executive summary, per-item sections (what happened,
-    why it matters, what to watch), and closing notes. Mark as
+    why it matters, what to watch), and closing notes. In every item,
+    state the analyst's severity and confidence level (High, Moderate,
+    or Low) and cite the source file name. Mark as
     UNCLASSIFIED // FOR EDUCATIONAL USE.
   expected_output: >
     A complete markdown Daily Threat Brief.
