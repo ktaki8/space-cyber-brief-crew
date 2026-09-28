@@ -8,9 +8,7 @@ authors:
   - given-names: Khadija
     family-names: Taki
     affiliation: "Carnegie Mellon University, Heinz College"
-  - given-names: Brian G.
-    family-names: Rodiles Delgado
-    affiliation: "University of West Florida"
+  
 keywords:
   - cyber threat intelligence
   - multi-agent systems
