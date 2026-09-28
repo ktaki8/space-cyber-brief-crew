@@ -11,6 +11,8 @@ from typing import Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel
 
+from sanitize import sanitize_text
+
 # Absolute path to the default sources/ folder, resolved once at import.
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCES_DIR = os.path.realpath(os.path.join(REPO_ROOT, "sources"))
@@ -50,6 +52,9 @@ class FileReaderTool(BaseTool):
     )
     args_schema: Type[BaseModel] = FileReaderInput
     sources_dir: str = SOURCES_DIR
+    # Quarantine known injection patterns before the model sees the text.
+    # Set by the operator (main.py --no-sanitize), never by the model.
+    sanitize: bool = True
 
     def _run(self, **kwargs) -> str:
         # Any arguments the model tries to pass (such as a directory) are ignored.
@@ -62,7 +67,10 @@ class FileReaderTool(BaseTool):
             filepath = os.path.join(root, filename)
             try:
                 with open(filepath, "r", encoding="utf-8") as f:
-                    content = f.read().strip()
+                    content = f.read()
+                if self.sanitize:
+                    content = sanitize_text(content).text
+                content = content.strip()
                 results.append(f"=== SOURCE: {filename} ===\n{content}\n=== END: {filename} ===\n")
             except Exception as e:
                 results.append(f"=== SOURCE: {filename} ===\nError: {e}\n=== END: {filename} ===\n")

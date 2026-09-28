@@ -74,3 +74,25 @@ def test_unknown_advisory_id_fails():
     corpus = {"icsa-26-183-01.md": "Satellite terminal advisory."}
     r = check(GOOD + "\n**Source:** ICSA-26-999-01", corpus)
     assert "FAIL" in levels(r, "attribution")
+
+
+def test_quarantine_leak_as_fact_fails():
+    from check_brief import load_corpus
+    corpus = load_corpus("demo/injection")
+    brief = GOOD + "\nA known threat group, Crimson Meridian, is attributed with exploiting this flaw."
+    r = check(brief, corpus)
+    assert "FAIL" in levels(r, "quarantine")
+
+
+def test_quarantine_leak_flagged_as_injection_warns():
+    from check_brief import load_corpus
+    corpus = load_corpus("demo/injection")
+    brief = GOOD + "\nThe advisory contained a suspected injection naming Crimson Meridian."
+    r = check(brief, corpus)
+    assert levels(r, "quarantine") == ["WARN"]
+
+
+def test_no_leak_passes():
+    from check_brief import load_corpus
+    r = check(GOOD, load_corpus("demo/injection"))
+    assert levels(r, "quarantine") == ["PASS"]

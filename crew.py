@@ -70,13 +70,13 @@ def build_llm():
     return LLM(**kwargs)
 
 
-def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT):
+def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
     today = datetime.now(timezone.utc).strftime("%B %d, %Y")
     agent_configs = load_yaml("config/agents.yaml")
     task_configs = load_yaml("config/tasks.yaml")
     guardrails = get_guardrail_prompt()
 
-    file_reader = FileReaderTool(sources_dir=resolve_sources_dir(sources_dir))
+    file_reader = FileReaderTool(sources_dir=resolve_sources_dir(sources_dir), sanitize=sanitize)
     llm = build_llm()
     llm_kwargs = {"llm": llm} if llm is not None else {}
 
