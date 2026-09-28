@@ -13,7 +13,37 @@ It accompanies the paper *Governing the Intelligence Loop: Architectural Mitigat
 - **Checks its own output.** `check_brief.py` flags invented CVE IDs, citations of files that don't exist, missing classification markings, and canary strings planted by prompt-injection tests.
 - **Runs on real reporting.** `fetch_sources.py` pulls current CISA advisories into a corpus with provenance recorded for every document.
 
-<!-- TODO before release: paste a short excerpt of a real, current brief here (regenerate first; see "Sample sources"). -->
+## Sample output
+
+An excerpt from a brief generated on September 28, 2026 from live CISA advisories. Full brief: [`demo/fallback_brief.md`](demo/fallback_brief.md).
+
+<details>
+<summary>Show the excerpt</summary>
+
+**Date:** September 28, 2026<br>
+**Classification:** UNCLASSIFIED // FOR EDUCATIONAL USE
+
+---
+
+### Executive Summary
+
+September 28's briefing highlights critical vulnerabilities across multiple critical infrastructure sectors including Industrial Control Systems, Satellite Communications, Physical Security, Electrical Power, and Transportation. The Mitsubishi Electric MELSEC controllers and Siemens Reyrolle 7SR5 relay devices present critical denial-of-service and unauthorized access risks that could severely impact industrial processes and power grid stability. Satellite communication terminals and surveillance devices face high-risk multi-vector intrusions capable of unauthorized control and data manipulation. Transportation sector vulnerabilities in dashcams and fleet management systems pose risks of credential compromise and device manipulation. Immediate patching, network segmentation, and rigorous monitoring remain essential defenses.
+
+### 1. Mitsubishi Electric CC-Link IE TSN Communication Protocol
+
+**What Happened:** A critical vulnerability affects Mitsubishi MELSEC industrial controllers and communication modules. Attackers with network access can send crafted packets that disrupt device operations, causing denial-of-service conditions affecting industrial process control.
+
+**Why It Matters:** This weakness threatens critical infrastructure control systems, potentially halting industrial operations and causing cascading operational failures. Given its critical severity and high confidence, swift action is mandatory.
+
+**What to Watch:**
+- Restrict network access to CC-Link IE TSN networks to trusted entities only.
+- Apply vendor-recommended patches as soon as available.
+
+**Severity:** Critical<br>
+**Confidence:** High<br>
+(Source: icsa-26-211-07.md)
+
+</details>
 
 ## How it works
 
@@ -28,7 +58,23 @@ flowchart LR
     B --> K["check_brief.py<br/>automated checks"]
     K --> H["Human review"]
     G["guardrails.py<br/>10 ICD 203-based rules"] -.-> C & A & W
+
+    classDef operator fill:#E3ECF8,stroke:#4A6FA5,stroke-width:1.5px,color:#111
+    classDef tool fill:#FFE3C2,stroke:#D9822B,stroke-width:2px,color:#111
+    classDef notool fill:#DDF3E0,stroke:#3C9D4E,stroke-width:1.5px,color:#111
+    classDef rules fill:#FBDADA,stroke:#C94C4C,stroke-width:1.5px,color:#111
+    classDef check fill:#EAE1F8,stroke:#7E57C2,stroke-width:1.5px,color:#111
+    classDef human fill:#FFF4B8,stroke:#B59B00,stroke-width:1.5px,color:#111
+
+    class F,S operator
+    class C tool
+    class A,W notool
+    class G rules
+    class B,K check
+    class H human
 ```
+
+Colors show trust level. Blue: operator-controlled inputs. Orange: the only agent with a tool. Green: agents with no tools. Red: guardrail rules. Purple: output and automated checks. Yellow: human review.
 
 1. **Collector** reads the documents in the source folder and extracts structured records (file, title, date, affected systems, summary). It is the only agent with a tool: a read-only file reader locked to one folder.
 2. **Analyst** assigns sector, threat type, severity, confidence, and MITRE ATT&CK or ATLAS mappings. It has **no tools**.
