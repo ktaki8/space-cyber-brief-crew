@@ -22,3 +22,21 @@ def test_integrity_note_added_only_when_needed():
     assert ensure_integrity_note("# Brief\nContent was quarantined.\n", q) == "# Brief\nContent was quarantined.\n"
     assert ensure_integrity_note("# Brief\n", {}) == "# Brief\n"
     assert quarantined_sources("sources") == {}
+
+
+def test_writer_guardrail_rejects_invented_sources_then_flags(monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setenv("OPENAI_API_KEY", "test")
+    from crew import build_crew
+    task = build_crew(sources_dir="demo/injection").tasks[2]
+    bad = SimpleNamespace(raw="# Brief\nSource: hexlink_gs400_default_cred_advisory.txt")
+    ok, message = task.guardrail(bad)
+    assert not ok and "ground_station_modem_advisory.md" in message
+    task.retry_count = task.guardrail_max_retries
+    ok, text = task.guardrail(bad)
+    assert ok and "Attribution warning" in text
+    task.retry_count = 0
+    good = SimpleNamespace(raw="# Brief\nSources: forum_post_unverified.md, gnss_interference_notice.md, "
+                               "ground_station_modem_advisory.md")
+    ok, text = task.guardrail(good)
+    assert ok and "Attribution warning" not in text and "## Source integrity" in text

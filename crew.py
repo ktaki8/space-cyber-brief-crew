@@ -6,8 +6,10 @@ from crewai import Agent, Task, Crew, Process, LLM
 from tools.file_reader import FileReaderTool, SOURCES_DIR, list_source_files
 from guardrails import get_guardrail_prompt
 from sanitize import sanitize_text
+from check_brief import citation_status
 
 DEFAULT_OUTPUT = os.path.join("output", "daily_brief.md")
+GUARDRAIL_RETRIES = 2
 
 def load_yaml(path):
     with open(path, "r", encoding="utf-8") as f:
@@ -108,6 +110,7 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
     resolved_sources = resolve_sources_dir(sources_dir)
     file_reader = FileReaderTool(sources_dir=resolved_sources, sanitize=sanitize)
     quarantined = quarantined_sources(resolved_sources) if sanitize else {}
+    source_names = list_source_files(resolved_sources)
     llm = build_llm()
     llm_kwargs = {"llm": llm} if llm is not None else {}
 
@@ -154,21 +157,42 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
         context=[collect_task],
     )
 
-    def enforce_run_date(output):
-        """Task guardrail: unwrap code fences, stamp the real date, and make
-        sure any quarantined source is disclosed, before saving."""
-        text = stamp_brief_date(strip_code_fence(output.raw), today)
+    def enforce_brief_rules(output):
+        """Task guardrail, run in code before the brief is saved.
+
+        Rejects a brief that cites source files that do not exist, or cites
+        none at all, and sends it back to the Writer with the reason (up to
+        GUARDRAIL_RETRIES times). Then unwraps code fences, stamps the real
+        date, and makes sure any quarantined source is disclosed.
+        """
+        text = strip_code_fence(output.raw)
+        unknown, uncited = citation_status(text, set(source_names))
+        problem, detail = None, ""
+        if unknown:
+            problem = "The brief cites sources that do not exist: " + ", ".join(unknown) + "."
+            detail = " Rewrite it citing only these exact file names: " + ", ".join(source_names) + "."
+        elif source_names and len(uncited) == len(source_names):
+            problem = "The brief cites no sources."
+            detail = " Cite the exact source file name in every item, choosing from: " + ", ".join(source_names) + "."
+        if problem and write_task.retry_count < GUARDRAIL_RETRIES:
+            return (False, problem + detail)
+        if problem:  # retries used up: keep the brief, but say so at the top
+            text = f"> **Attribution warning:** {problem} Verify every item against the sources.\n\n" + text
+        text = stamp_brief_date(text, today)
         return (True, ensure_integrity_note(text, quarantined))
 
     write_task = Task(
         description=task_configs["write_brief"]["description"]
         + f"\n\nThe date of this brief is {today}. Write it as **Date:** {today}."
-        " Do not use any other date for the brief itself.",
+        " Do not use any other date for the brief itself."
+        "\n\nThe only valid source file names are: " + ", ".join(source_names)
+        + ". Copy them exactly; never rename, shorten, or invent a file name.",
         expected_output=task_configs["write_brief"]["expected_output"],
         agent=writer,
         context=[analyze_task],
         output_file=output_file,
-        guardrail=enforce_run_date,
+        guardrail=enforce_brief_rules,
+        guardrail_max_retries=GUARDRAIL_RETRIES,
     )
 
     crew = Crew(

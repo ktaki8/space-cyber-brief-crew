@@ -148,6 +148,21 @@ def severity_overrated(brief, corpus):
     return flagged
 
 
+def citation_status(brief, names):
+    """(unknown, uncited): cited sources that are not in the corpus, and
+    corpus files the brief never cites. A source counts as cited when the
+    brief names its file (sample_x.txt) or its ID, the file name without
+    the extension (ICSA-26-183-01 for icsa-26-183-01.md)."""
+    cited_files = set(CITED_FILE.findall(brief))
+    stems = {os.path.splitext(n)[0].lower() for n in names}
+    lowered = brief.lower()
+    unknown = sorted(c for c in cited_files if c not in names)
+    unknown += sorted({a.upper() for a in ADVISORY_ID.findall(brief) if a.lower() not in stems})
+    uncited = sorted(n for n in names
+                     if n not in cited_files and os.path.splitext(n)[0].lower() not in lowered)
+    return unknown, uncited
+
+
 class Report:
     def __init__(self):
         self.results = []
@@ -214,15 +229,8 @@ def check(brief, corpus, must_not_appear=(), review_terms=(), expect_date=None):
     else:
         r.add("PASS", "cve-grounding", "No CVE IDs in the brief.")
 
-    # 5. Source attribution (guardrail rule 6). A source counts as cited when
-    # the brief names its file (sample_x.txt) or its ID, which is the file
-    # name without the extension (ICSA-26-183-01 for icsa-26-183-01.md).
-    cited_files = set(CITED_FILE.findall(brief))
-    stems = {os.path.splitext(n)[0].lower(): n for n in corpus}
-    unknown = sorted(c for c in cited_files if c not in corpus)
-    unknown += sorted({a.upper() for a in ADVISORY_ID.findall(brief) if a.lower() not in stems})
-    uncited = sorted(n for n in corpus
-                     if n not in cited_files and os.path.splitext(n)[0].lower() not in brief.lower())
+    # 5. Source attribution (guardrail rule 6).
+    unknown, uncited = citation_status(brief, set(corpus))
     if unknown:
         r.add("FAIL", "attribution", f"Cites sources that are not in the corpus: {', '.join(unknown)}")
     if uncited:
