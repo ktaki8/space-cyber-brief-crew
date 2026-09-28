@@ -5,6 +5,7 @@ Shared by api.py (the /api/signals triage endpoint) and fetch_sources.py
 
 Keyword scoring is a triage aid, not validated intelligence.
 """
+import json
 import re
 import shutil
 import subprocess
@@ -17,6 +18,15 @@ FEEDS = [
     ("CISA Cybersecurity Advisories", "https://www.cisa.gov/cybersecurity-advisories/all.xml"),
     ("CISA ICS Advisories", "https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml"),
 ]
+
+# CISA's Known Exploited Vulnerabilities catalog, published by CISA on GitHub.
+# CISA's own website blocks many cloud servers (such as Render), but GitHub
+# does not, so this source keeps the demo on real data when the RSS feeds fail.
+KEV_SOURCE = "CISA Known Exploited Vulnerabilities"
+KEV_URL = (
+    "https://raw.githubusercontent.com/cisagov/kev-data/develop/"
+    "known_exploited_vulnerabilities.json"
+)
 
 # CISA's bot protection returns 403 unless the request looks like a browser.
 USER_AGENT = (
@@ -120,18 +130,58 @@ def _fetch_with_curl(url: str, timeout: int) -> bytes:
     return result.stdout
 
 
+def fetch_bytes(url: str, timeout: int = 20) -> bytes:
+    """Fetch a URL with Python's HTTP client, falling back to curl."""
+    try:
+        return _fetch_with_urllib(url, timeout)
+    except Exception as first:
+        try:
+            return _fetch_with_curl(url, timeout)
+        except Exception as second:
+            raise RuntimeError(f"{type(first).__name__}: {first}; curl fallback: {second}")
+
+
+def kev_items(data: bytes, limit: int = 15) -> list[dict]:
+    """Turn the KEV catalog JSON into signal items, newest additions first."""
+    vulns = json.loads(data).get("vulnerabilities", [])
+    vulns.sort(key=lambda v: v.get("dateAdded", ""), reverse=True)
+    items = []
+    for v in vulns[:limit]:
+        cve = v.get("cveID", "")
+        name = v.get("vulnerabilityName", "") or f"{v.get('vendorProject', '')} {v.get('product', '')}"
+        title = f"{cve}: {name}" if cve else name
+        desc = v.get("shortDescription", "").strip()
+        if desc and not desc.endswith("."):
+            desc += "."
+        parts = [
+            desc,
+            f"Affected: {v.get('vendorProject', '')} {v.get('product', '')}.",
+            f"Added to CISA KEV on {v.get('dateAdded', 'unknown date')}; federal remediation due {v.get('dueDate', 'not stated')}.",
+            f"Known ransomware use: {v.get('knownRansomwareCampaignUse', 'Unknown')}.",
+            f"Required action: {v.get('requiredAction', '')}",
+        ]
+        summary = " ".join(p.strip() for p in parts if p and p.strip())
+        body_html = "".join(f"<p>{p}</p>" for p in parts if p and p.strip())
+        items.append({
+            "source": KEV_SOURCE,
+            "title": title,
+            "summary": summary,
+            "body_html": body_html,
+            "link": f"https://nvd.nist.gov/vuln/detail/{cve}" if cve else "",
+            "published": v.get("dateAdded", ""),
+        })
+    return items
+
+
 def fetch_feed(url: str, timeout: int = 20):
     """Fetch and parse one feed. Returns (entries, error_message_or_None).
 
     Tries Python's HTTP client first, then curl.
     """
     try:
-        data = _fetch_with_urllib(url, timeout)
-    except Exception as first:  # network errors, 403s, timeouts
-        try:
-            data = _fetch_with_curl(url, timeout)
-        except Exception as second:
-            return [], f"{type(first).__name__}: {first}; curl fallback: {second}"
+        data = fetch_bytes(url, timeout)
+    except Exception as e:  # network errors, 403s, timeouts
+        return [], str(e)
     parsed = feedparser.parse(data)
     if parsed.bozo and not parsed.entries:
         return [], f"Could not parse feed: {parsed.bozo_exception}"
@@ -173,5 +223,14 @@ def collect_signals(per_feed: int = 15):
                 "score": score,
                 "matched_terms": matched,
             })
+
+    # KEV catalog via GitHub: works even where cisa.gov blocks the server.
+    try:
+        for item in kev_items(fetch_bytes(KEV_URL), limit=per_feed):
+            item["score"], item["matched_terms"] = score_signal(item["title"], item["summary"])
+            items.append(item)
+    except Exception as e:
+        errors.append({"source": KEV_SOURCE, "url": KEV_URL, "error": str(e)})
+
     items.sort(key=lambda x: x["score"], reverse=True)
     return items, errors
