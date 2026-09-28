@@ -10,7 +10,9 @@ import re
 import shutil
 import subprocess
 import urllib.request
+from calendar import timegm
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 from html import unescape
 
 import feedparser
@@ -46,14 +48,24 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/129.0 Safari/537.36"
 )
 
-# Terms that tie an item to the space, ground, or link segments. Weighted higher.
+# Items older than this are dropped, so old advisories that a feed re-publishes
+# (CERT-FR does this when it revises an advisory) don't show as new.
+MAX_AGE_DAYS = 90
+
+# Terms that clearly tie an item to the space, ground, or link segments.
 SPACE_TERMS = [
-    "satellite", "spacecraft", "space", "ground station", "ground segment",
-    "gps", "gnss", "pnt", "positioning", "navigation", "timing",
-    "vsat", "telemetry", "uplink", "downlink", "orbit", "antenna",
-    "radio", "rf", "sdr", "maritime", "aviation",
+    "satellite", "satellites", "spacecraft", "ground station", "ground segment",
+    "gps", "gnss", "pnt", "vsat", "orbit", "orbital", "sdr",
     # French equivalents, for CERT-FR
     "spatial", "station sol", "navigation par satellite",
+]
+
+# Terms that are space-related only in context: "navigation" in a phone app or
+# "space" in "disk space" are not space threats. These count only when the
+# item also contains at least one term from SPACE_TERMS.
+CONTEXT_SPACE_TERMS = [
+    "space", "positioning", "navigation", "timing", "telemetry",
+    "uplink", "downlink", "antenna", "radio", "rf", "maritime", "aviation",
 ]
 
 # General cyber and infrastructure terms. Weighted lower.
@@ -106,6 +118,11 @@ def score_signal(title: str, summary: str) -> tuple[int, list[str]]:
         if _term_found(term, text):
             matched.append(term)
             score += SPACE_WEIGHT
+    if matched:  # context terms count only alongside a clear space term
+        for term in CONTEXT_SPACE_TERMS:
+            if _term_found(term, text):
+                matched.append(term)
+                score += SPACE_WEIGHT
     for term in GENERAL_TERMS:
         if _term_found(term, text):
             matched.append(term)
@@ -115,6 +132,35 @@ def score_signal(title: str, summary: str) -> tuple[int, list[str]]:
 
 def is_space_relevant(matched_terms: list[str]) -> bool:
     return any(t in SPACE_TERMS for t in matched_terms)
+
+
+_CERTFR_YEAR = re.compile(r"CERTFR-(\d{4})-", re.I)
+
+
+def entry_datetime(entry):
+    """Publication time of a feed entry (UTC), or None if the feed gives none."""
+    for key in ("published_parsed", "updated_parsed"):
+        value = entry.get(key)
+        if value:
+            return datetime.fromtimestamp(timegm(value), tz=timezone.utc)
+    return None
+
+
+def is_too_old(published, link: str = "", now=None) -> bool:
+    """True if the item is older than MAX_AGE_DAYS.
+
+    Items with no date are kept. CERT-FR advisory IDs carry the year the
+    advisory was first issued, which is checked too, because a revision of a
+    2019 advisory can carry a 2026 date in the feed.
+    """
+    now = now or datetime.now(timezone.utc)
+    cutoff = now - timedelta(days=MAX_AGE_DAYS)
+    if published and published < cutoff:
+        return True
+    m = _CERTFR_YEAR.search(link or "")
+    if m and int(m.group(1)) < cutoff.year:
+        return True
+    return False
 
 
 HEADERS = {
@@ -164,6 +210,12 @@ def kev_items(data: bytes, limit: int = 15) -> list[dict]:
     vulns.sort(key=lambda v: v.get("dateAdded", ""), reverse=True)
     items = []
     for v in vulns[:limit]:
+        try:
+            added = datetime.strptime(v.get("dateAdded", ""), "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        except ValueError:
+            added = None
+        if is_too_old(added):
+            continue
         cve = v.get("cveID", "")
         name = v.get("vulnerabilityName", "") or f"{v.get('vendorProject', '')} {v.get('product', '')}"
         title = f"{cve}: {name}" if cve else name
@@ -237,6 +289,8 @@ def _feed_items(source_name: str, url: str, per_feed: int):
         return [], {"source": source_name, "url": url, "error": error}
     items = []
     for entry in entries[:per_feed]:
+        if is_too_old(entry_datetime(entry), entry.get("link", "")):
+            continue
         title = clean_html(entry.get("title", ""))
         body_html = entry_text(entry)
         summary = clean_html(body_html)
