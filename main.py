@@ -5,6 +5,7 @@ import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
+import plain_output
 from sanitize import sanitize_text
 from tools.file_reader import list_source_files
 
@@ -40,6 +41,7 @@ def sanitization_report(sources_dir, source_files, report_path):
 
 
 def main(argv=None):
+    plain_output.install()  # drop emojis from CrewAI's progress display
     load_dotenv()
     args = parse_args(argv)
 

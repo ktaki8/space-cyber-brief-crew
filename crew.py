@@ -7,6 +7,7 @@ from tools.file_reader import FileReaderTool, SOURCES_DIR, list_source_files
 from guardrails import get_guardrail_prompt
 from sanitize import sanitize_text
 from check_brief import citation_status
+from plain_output import strip_emoji
 
 DEFAULT_OUTPUT = os.path.join("output", "daily_brief.md")
 GUARDRAIL_RETRIES = 2
@@ -165,7 +166,7 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
         GUARDRAIL_RETRIES times). Then unwraps code fences, stamps the real
         date, and makes sure any quarantined source is disclosed.
         """
-        text = strip_code_fence(output.raw)
+        text = strip_emoji(strip_code_fence(output.raw))
         unknown, uncited = citation_status(text, set(source_names))
         problem, detail = None, ""
         if unknown:
