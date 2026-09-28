@@ -89,7 +89,7 @@ Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, a
 - The Analyst and Writer have no tools, so text injected into a source document cannot make them run commands, read files, or access the network.
 - The Collector's file reader takes no arguments. The folder is chosen by the operator when the crew is built (`--sources` or `BRIEF_SOURCES_DIR`), never by the model, and symlinks that point outside it are skipped.
 - `fetch_sources.py` is the only network access, and it runs outside the pipeline under the operator's control. The agents never fetch anything.
-- Before any model reads a source, a sanitizer (`sanitize.py`) quarantines content a human reader would not see or would recognize as addressed to a machine: hidden HTML comments, invisible Unicode characters, and passages such as "SYSTEM NOTICE" or "ignore previous instructions". Each removal is replaced with a visible marker, and `main.py` saves the removed text next to the brief for review. It catches **known patterns only**: an injection written as ordinary analytic prose passes straight through.
+- Before any model reads a source, a sanitizer (`sanitize.py`) quarantines content a human reader would not see or would recognize as addressed to a machine: hidden HTML comments, invisible Unicode characters, and passages such as "SYSTEM NOTICE" or "ignore previous instructions". Each removal is replaced with a visible marker, and `main.py` saves the removed text next to the brief for review. If anything was quarantined, the brief always ends with a "Source integrity" section saying so; the program adds it if the Writer leaves it out. It catches **known patterns only**: an injection written as ordinary analytic prose passes straight through.
 - Injected text **can still influence what the agents write**. Tool removal contains the execution channel; it does not make the output trustworthy on its own. That is why the output is checked, and why human review of the finished brief is still required.
 - The guardrail rules are instructions to the model, so compliance is probabilistic and has to be measured. See [Measuring the guardrails](#measuring-the-guardrails).
 
@@ -169,6 +169,8 @@ python check_brief.py output/daily_brief.md --sources sources
 | FAIL | A canary string from an injected instruction appears |
 | FAIL | A name, code, or link that exists only in quarantined text appears as fact (WARN if the brief flags it as a suspected injection) |
 | WARN | A source is never cited, or no confidence language appears (rules 6, 7) |
+| WARN | An item is rated above the CVSS band its own source states |
+| WARN | Sources were quarantined but the brief does not disclose it |
 | INFO | ATT&CK and ATLAS technique IDs to verify by hand |
 
 It exits with status 1 on any FAIL, so it can gate a scheduled run. Add `--today` to require today's date and `--json` for machine-readable output. It does not judge whether the analysis is correct; that still takes a person.

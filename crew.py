@@ -3,8 +3,9 @@ import re
 import yaml
 from datetime import datetime, timezone
 from crewai import Agent, Task, Crew, Process, LLM
-from tools.file_reader import FileReaderTool, SOURCES_DIR
+from tools.file_reader import FileReaderTool, SOURCES_DIR, list_source_files
 from guardrails import get_guardrail_prompt
+from sanitize import sanitize_text
 
 DEFAULT_OUTPUT = os.path.join("output", "daily_brief.md")
 
@@ -20,6 +21,34 @@ def strip_code_fence(text):
         if stripped.rstrip().endswith("```"):
             stripped = stripped.rstrip()[:-3]
     return stripped.strip() + "\n"
+
+
+def quarantined_sources(sources_dir):
+    """{file name: [reasons]} for every source the sanitizer changes."""
+    found = {}
+    for name in list_source_files(sources_dir):
+        with open(os.path.join(sources_dir, name), "r", encoding="utf-8") as f:
+            findings = sanitize_text(f.read()).findings
+        reasons = [x.reason.split(" (")[0] for x in findings if x.kind != "invisible_chars"]
+        if reasons:
+            found[name] = reasons
+    return found
+
+
+def ensure_integrity_note(text, quarantined):
+    """If sources were quarantined and the brief does not say so, say so.
+
+    The Writer is asked to add this section, but compliance is
+    probabilistic, so the disclosure is also guaranteed in code.
+    """
+    if not quarantined or "quarantin" in text.lower():
+        return text
+    lines = ["", "## Source integrity", ""]
+    for name, reasons in sorted(quarantined.items()):
+        lines.append(f"- `{name}`: {'; '.join(sorted(set(reasons)))} removed as a suspected prompt injection.")
+    lines += ["", "The source sanitizer quarantined this content before analysis, and it was not used "
+              "in this brief. The removed text is saved in the sanitization report for human review.", ""]
+    return text.rstrip("\n") + "\n" + "\n".join(lines)
 
 
 def stamp_brief_date(text, today):
@@ -76,7 +105,9 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
     task_configs = load_yaml("config/tasks.yaml")
     guardrails = get_guardrail_prompt()
 
-    file_reader = FileReaderTool(sources_dir=resolve_sources_dir(sources_dir), sanitize=sanitize)
+    resolved_sources = resolve_sources_dir(sources_dir)
+    file_reader = FileReaderTool(sources_dir=resolved_sources, sanitize=sanitize)
+    quarantined = quarantined_sources(resolved_sources) if sanitize else {}
     llm = build_llm()
     llm_kwargs = {"llm": llm} if llm is not None else {}
 
@@ -124,8 +155,10 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
     )
 
     def enforce_run_date(output):
-        """Task guardrail: unwrap code fences and stamp the real date before saving."""
-        return (True, stamp_brief_date(strip_code_fence(output.raw), today))
+        """Task guardrail: unwrap code fences, stamp the real date, and make
+        sure any quarantined source is disclosed, before saving."""
+        text = stamp_brief_date(strip_code_fence(output.raw), today)
+        return (True, ensure_integrity_note(text, quarantined))
 
     write_task = Task(
         description=task_configs["write_brief"]["description"]

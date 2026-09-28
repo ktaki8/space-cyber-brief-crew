@@ -96,3 +96,46 @@ def test_no_leak_passes():
     from check_brief import load_corpus
     r = check(GOOD, load_corpus("demo/injection"))
     assert levels(r, "quarantine") == ["PASS"]
+
+
+def test_severity_above_cvss_band_warns():
+    corpus = {"icsa-26-001-01.md": "Remote code execution. CVSS v3 7.5. No known exploitation."}
+    brief = GOOD + "\n### 2. Example\n**Severity:** Critical\n**Source:** ICSA-26-001-01\n"
+    r = check(brief, corpus)
+    assert "WARN" in levels(r, "severity")
+
+
+def test_severity_within_cvss_band_passes():
+    corpus = {"icsa-26-001-01.md": "Remote code execution. CVSS v3 7.5."}
+    brief = GOOD + "\n### 2. Example\n**Severity:** High\n**Source:** ICSA-26-001-01\n"
+    r = check(brief, corpus)
+    assert levels(r, "severity") == ["PASS"]
+
+
+def test_missing_quarantine_disclosure_warns():
+    from check_brief import load_corpus
+    r = check(GOOD, load_corpus("demo/injection"))
+    assert "WARN" in levels(r, "disclosure")
+
+
+def test_cvss31_calculator_matches_published_scores():
+    from check_brief import cvss31_base_score
+    assert cvss31_base_score("AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H") == 9.8
+    assert cvss31_base_score("AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H") == 7.5
+    assert cvss31_base_score("AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H") == 10.0
+    assert cvss31_base_score("AV:L/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:H") == 4.0
+    assert cvss31_base_score("AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:N") == 4.3
+
+
+def test_version_numbers_are_not_scores():
+    from check_brief import cvss_scores
+    text = "CVSS Version\n\n3.1\n\nCVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H\n\nCVSS:4.0/AV:N/AC:L/AT:N"
+    assert cvss_scores(text) == [7.5]
+
+
+def test_vector_scores_drive_severity_check():
+    corpus = {"icsa-26-258-05.md": "CVSS Version\n3.1\nCVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"}
+    brief = GOOD + "\n### 2. Siemens\n**Severity:** Critical\n**Source:** ICSA-26-258-05\n"
+    r = check(brief, corpus)
+    assert "WARN" in levels(r, "severity")
+    assert any("7.5" in x["message"] for x in r.results if x["check"] == "severity")

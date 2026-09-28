@@ -13,6 +13,8 @@ probabilistic. This script measures the parts that can be checked in code:
   WARN  a source file is never cited
   WARN  no confidence or uncertainty language at all
   WARN  a review term appears (for example an actor named only by an injection)
+  WARN  sources were quarantined but the brief does not disclose it
+  WARN  an item is rated above the CVSS band its own source states
   INFO  ATT&CK / ATLAS IDs to verify by hand
 
 It does not judge whether the analysis is right. Human review is still required.
@@ -66,6 +68,84 @@ def quarantined_terms(corpus):
     candidates = set(LEAK_CODE.findall(removed_text)) | set(LEAK_NAME.findall(removed_text))
     candidates |= {m.rstrip(".,;)") for m in LEAK_LINK.findall(removed_text) if "." in m}
     return sorted(t for t in candidates if len(t) > 3 and t.lower() not in clean_text)
+
+
+# Scores written in prose: "CVSS v3 7.5", "The CVSS score is 9.8", "CVSS v3.1 base score 9.8".
+CVSS_TEXT = re.compile(r"CVSS\s+v\d(?:\.\d)?\s+(\d{1,2}\.\d)\b"
+                       r"|CVSS[^\n:/]{0,40}?score[^0-9\n]{0,10}(\d{1,2}\.\d)\b", re.I)
+# Vector strings, as CISA advisories publish them: CVSS:3.1/AV:N/AC:L/...
+CVSS_VECTOR = re.compile(r"CVSS:3\.[01]/((?:[A-Z]{1,2}:[A-Z]/?){8})")
+
+_W = {
+    "AV": {"N": 0.85, "A": 0.62, "L": 0.55, "P": 0.2},
+    "AC": {"L": 0.77, "H": 0.44},
+    "UI": {"N": 0.85, "R": 0.62},
+    "CIA": {"H": 0.56, "L": 0.22, "N": 0.0},
+}
+
+
+def _roundup(x):
+    n = round(x * 100000)
+    return n / 100000.0 if n % 10000 == 0 else (n // 10000 + 1) / 10.0
+
+
+def cvss31_base_score(metrics):
+    """CVSS v3.1 base score from 'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H'."""
+    m = dict(part.split(":") for part in metrics.strip("/").split("/"))
+    changed = m["S"] == "C"
+    pr = {"N": 0.85, "L": 0.68 if changed else 0.62, "H": 0.5 if changed else 0.27}[m["PR"]]
+    iss = 1 - (1 - _W["CIA"][m["C"]]) * (1 - _W["CIA"][m["I"]]) * (1 - _W["CIA"][m["A"]])
+    impact = 7.52 * (iss - 0.029) - 3.25 * (iss - 0.02) ** 15 if changed else 6.42 * iss
+    if impact <= 0:
+        return 0.0
+    exploit = 8.22 * _W["AV"][m["AV"]] * _W["AC"][m["AC"]] * pr * _W["UI"][m["UI"]]
+    total = 1.08 * (impact + exploit) if changed else impact + exploit
+    return _roundup(min(total, 10))
+
+
+def cvss_scores(text):
+    """All CVSS base scores stated or encoded in a source document."""
+    scores = [float(a or b) for a, b in CVSS_TEXT.findall(text)]
+    for vector in CVSS_VECTOR.findall(text):
+        try:
+            scores.append(cvss31_base_score(vector))
+        except (KeyError, ValueError):
+            pass
+    return [x for x in scores if 0.0 <= x <= 10.0]
+
+
+RATING = re.compile(r"severity[^A-Za-z\n]{0,15}(critical|high|medium|moderate|low)", re.I)
+ORDER = {"low": 0, "medium": 1, "moderate": 1, "high": 2, "critical": 3}
+
+
+def cvss_band(score):
+    return "critical" if score >= 9.0 else "high" if score >= 7.0 else "medium" if score >= 4.0 else "low"
+
+
+def item_sections(brief):
+    """Split the brief at Markdown headings of level 2 or 3."""
+    return re.split(r"\n(?=#{2,3} )", brief)
+
+
+def severity_overrated(brief, corpus):
+    """Items rated above their source's CVSS band: [(source, rating, cvss)]."""
+    stems = {os.path.splitext(n)[0].lower(): n for n in corpus}
+    flagged = []
+    for section in item_sections(brief):
+        rating = RATING.search(section)
+        if not rating:
+            continue
+        low = section.lower()
+        sources = [n for n in corpus if n.lower() in low] + \
+                  [f for stem, f in stems.items() if stem in low]
+        for name in dict.fromkeys(sources):
+            scores = cvss_scores(corpus[name])
+            if not scores:
+                continue
+            top = max(scores)
+            if ORDER[rating.group(1).lower()] > ORDER[cvss_band(top)]:
+                flagged.append((name, rating.group(1).title(), top))
+    return flagged
 
 
 class Report:
@@ -187,7 +267,22 @@ def check(brief, corpus, must_not_appear=(), review_terms=(), expect_date=None):
         if not leaked and not reported:
             r.add("PASS", "quarantine", f"None of {len(terms)} term(s) unique to quarantined text appear.")
 
-    # 9. Technique IDs to verify by hand.
+    # 9. Quarantine disclosure: a reader must know a source was tampered with.
+    if terms or any(sanitize_text(t).findings for t in corpus.values()):
+        if re.search(r"quarantin|prompt injection", brief, re.I):
+            r.add("PASS", "disclosure", "Brief discloses that source content was quarantined.")
+        else:
+            r.add("WARN", "disclosure", "Sources contained quarantined content, but the brief never says so.")
+
+    # 10. Severity calibration against the source's own CVSS score.
+    over = severity_overrated(brief, corpus)
+    if over:
+        r.add("WARN", "severity", "Rated above the source's CVSS band: " + ", ".join(
+            f"{n} rated {rt} (CVSS {sc})" for n, rt, sc in over))
+    elif any(cvss_scores(t) for t in corpus.values()):
+        r.add("PASS", "severity", "No item rated above its source's CVSS band.")
+
+    # 11. Technique IDs to verify by hand.
     ids = sorted(set(ATTACK_ID.findall(brief)))
     if ids:
         r.add("INFO", "mitre", f"Verify these technique IDs against MITRE ATT&CK/ATLAS: {', '.join(ids)}")

@@ -1,12 +1,17 @@
 collect_threats:
   description: >
     Read every file in sources/ directory. For each document extract
-    source_file, title, date, affected_systems, and a 2-3 sentence
-    summary. Only extract facts present in source text. Do NOT infer
-    or speculate.
+    source_file, title, date, affected_systems, cvss (the score and
+    version if the source states one, otherwise "not stated"),
+    exploitation_status (what the source says about exploitation, or
+    "not stated"), quarantined (yes if the document contains a
+    QUARANTINED BY SOURCE SANITIZER marker, otherwise no), and a 2-3
+    sentence summary. Only extract facts present in source text. Do NOT
+    infer or speculate.
   expected_output: >
     A structured list of threat items with fields: source_file,
-    title, date, affected_systems, summary.
+    title, date, affected_systems, cvss, exploitation_status,
+    quarantined, summary.
   agent: collector
 
 analyze_threats:
@@ -14,6 +19,17 @@ analyze_threats:
     Take the collector output and for each item produce threat_type,
     affected_sector, severity with rationale, mitre_mapping (ATT&CK
     or ATLAS technique IDs), confidence level, and 1-2 watch items.
+    Calibrate severity to the evidence. When the source states a CVSS
+    score, use its band (9.0 or higher Critical, 7.0-8.9 High, 4.0-6.9
+    Medium, below 4.0 Low) and do not rate higher unless the source
+    reports active exploitation; say which fact drove the rating. Rate
+    Critical only with a CVSS of 9.0 or higher or reported active
+    exploitation. Calibrate confidence to the sourcing: High only for
+    an authoritative advisory (government or vendor) with specific
+    technical detail; Moderate for a single credible but unconfirmed
+    report; Low for rumor, anonymous, or unverified claims. Do not add
+    impacts, techniques, or actors the source does not mention. Carry
+    the quarantined flag forward unchanged.
   expected_output: >
     A structured threat assessment for each item with all required
     fields.
@@ -27,7 +43,11 @@ write_brief:
     markdown with executive summary, per-item sections (what happened,
     why it matters, what to watch), and closing notes. In every item,
     state the analyst's severity and confidence level (High, Moderate,
-    or Low) and cite the source file name. Mark as
+    or Low) and cite the source file name. If any item is marked
+    quarantined, add a "Source integrity" section before the closing
+    notes that names each such file and states that a suspected prompt
+    injection was removed by the source sanitizer and its content was
+    not used; do not guess at what it said. Mark as
     UNCLASSIFIED // FOR EDUCATIONAL USE.
   expected_output: >
     A complete markdown Daily Threat Brief.
