@@ -103,4 +103,3 @@ main.py        Local workflow entry point
 
 **Khadija Taki**, MSISPM, Carnegie Mellon University (Heinz College). Cybersecurity, AI, and space systems security.
 
-**Brian G. Rodiles Delgado**, Cybersecurity Management MBA, University of West Florida. Industrial control systems (ICS), operational technology (OT), and agentic infrastructure and evaluations.
