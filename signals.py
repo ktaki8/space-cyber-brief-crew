@@ -10,19 +10,31 @@ import re
 import shutil
 import subprocess
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from html import unescape
 
 import feedparser
 
+# Each feed is (display name, URL). The region is part of the name so it shows
+# up everywhere the source is displayed. A feed that fails is reported and
+# skipped; the others still load.
 FEEDS = [
-    ("CISA Cybersecurity Advisories", "https://www.cisa.gov/cybersecurity-advisories/all.xml"),
-    ("CISA ICS Advisories", "https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml"),
+    # United States
+    ("CISA Cybersecurity Advisories (US)", "https://www.cisa.gov/cybersecurity-advisories/all.xml"),
+    ("CISA ICS Advisories (US)", "https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml"),
+    # Europe
+    ("NCSC (UK)", "https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml"),
+    ("CERT-FR (France)", "https://www.cert.ssi.gouv.fr/feed/"),
+    ("CERT Polska (Poland)", "https://cert.pl/en/atom.xml"),
+    # Asia
+    ("JPCERT/CC (Japan)", "https://www.jpcert.or.jp/english/rss/jpcert-en.rdf"),
+    ("JVN (Japan)", "https://jvn.jp/en/rss/jvn.rdf"),
 ]
 
 # CISA's Known Exploited Vulnerabilities catalog, published by CISA on GitHub.
 # CISA's own website blocks many cloud servers (such as Render), but GitHub
 # does not, so this source keeps the demo on real data when the RSS feeds fail.
-KEV_SOURCE = "CISA Known Exploited Vulnerabilities"
+KEV_SOURCE = "CISA Known Exploited Vulnerabilities (US)"
 KEV_URL = (
     "https://raw.githubusercontent.com/cisagov/kev-data/develop/"
     "known_exploited_vulnerabilities.json"
@@ -40,6 +52,8 @@ SPACE_TERMS = [
     "gps", "gnss", "pnt", "positioning", "navigation", "timing",
     "vsat", "telemetry", "uplink", "downlink", "orbit", "antenna",
     "radio", "rf", "sdr", "maritime", "aviation",
+    # French equivalents, for CERT-FR
+    "spatial", "station sol", "navigation par satellite",
 ]
 
 # General cyber and infrastructure terms. Weighted lower.
@@ -47,6 +61,9 @@ GENERAL_TERMS = [
     "critical infrastructure", "infrastructure", "communications", "network",
     "vulnerability", "remote code execution", "authentication", "supply chain",
     "vendor", "scanning", "firmware", "exploit",
+    # French equivalents, for CERT-FR
+    "vulnérabilité", "vulnérabilités", "exécution de code arbitraire à distance",
+    "contournement de la politique de sécurité", "chaîne d'approvisionnement",
 ]
 
 SPACE_WEIGHT = 3
@@ -196,41 +213,74 @@ def entry_text(entry) -> str:
     return entry.get("summary", "") or entry.get("description", "")
 
 
+def _interleave_by_source(items: list[dict]) -> list[dict]:
+    """Keep the best item from every source near the top.
+
+    Items are ranked by score within each source, then taken round-robin,
+    highest-scoring sources first. Without this, one large feed (such as the
+    KEV catalog) can fill the whole list and hide the other regions.
+    """
+    groups: dict[str, list[dict]] = {}
+    for item in sorted(items, key=lambda x: x["score"], reverse=True):
+        groups.setdefault(item["source"], []).append(item)
+    ordered, rank = [], 0
+    while any(rank < len(g) for g in groups.values()):
+        tier = [g[rank] for g in groups.values() if rank < len(g)]
+        ordered.extend(sorted(tier, key=lambda x: x["score"], reverse=True))
+        rank += 1
+    return ordered
+
+
+def _feed_items(source_name: str, url: str, per_feed: int):
+    entries, error = fetch_feed(url)
+    if error:
+        return [], {"source": source_name, "url": url, "error": error}
+    items = []
+    for entry in entries[:per_feed]:
+        title = clean_html(entry.get("title", ""))
+        body_html = entry_text(entry)
+        summary = clean_html(body_html)
+        score, matched = score_signal(title, summary)
+        items.append({
+            "source": source_name,
+            "title": title,
+            "summary": summary,
+            "body_html": body_html,
+            "link": entry.get("link", ""),
+            "published": entry.get("published", "") or entry.get("updated", ""),
+            "score": score,
+            "matched_terms": matched,
+        })
+    return items, None
+
+
+def _kev_source_items(per_feed: int):
+    try:
+        items = kev_items(fetch_bytes(KEV_URL), limit=per_feed)
+    except Exception as e:
+        return [], {"source": KEV_SOURCE, "url": KEV_URL, "error": str(e)}
+    for item in items:
+        item["score"], item["matched_terms"] = score_signal(item["title"], item["summary"])
+    return items, None
+
+
 def collect_signals(per_feed: int = 15):
-    """Fetch every feed and score its newest items.
+    """Fetch every feed (in parallel) and score its newest items.
 
     Returns (items, errors). Each item has source, title, summary (plain text),
-    body_html, link, published, score, and matched terms.
+    body_html, link, published, score, and matched terms. Items are ordered so
+    each source's best item appears near the top.
     """
-    items, errors = [], []
-    for source_name, url in FEEDS:
-        entries, error = fetch_feed(url)
-        if error:
-            errors.append({"source": source_name, "url": url, "error": error})
-            continue
-        for entry in entries[:per_feed]:
-            title = clean_html(entry.get("title", ""))
-            body_html = entry_text(entry)
-            summary = clean_html(body_html)
-            score, matched = score_signal(title, summary)
-            items.append({
-                "source": source_name,
-                "title": title,
-                "summary": summary,
-                "body_html": body_html,
-                "link": entry.get("link", ""),
-                "published": entry.get("published", "") or entry.get("updated", ""),
-                "score": score,
-                "matched_terms": matched,
-            })
-
+    jobs = [(_feed_items, (name, url, per_feed)) for name, url in FEEDS]
     # KEV catalog via GitHub: works even where cisa.gov blocks the server.
-    try:
-        for item in kev_items(fetch_bytes(KEV_URL), limit=per_feed):
-            item["score"], item["matched_terms"] = score_signal(item["title"], item["summary"])
-            items.append(item)
-    except Exception as e:
-        errors.append({"source": KEV_SOURCE, "url": KEV_URL, "error": str(e)})
+    jobs.append((_kev_source_items, (per_feed,)))
 
-    items.sort(key=lambda x: x["score"], reverse=True)
-    return items, errors
+    items, errors = [], []
+    with ThreadPoolExecutor(max_workers=len(jobs)) as pool:
+        futures = [pool.submit(fn, *args) for fn, args in jobs]
+        for f in futures:
+            got, error = f.result()
+            items.extend(got)
+            if error:
+                errors.append(error)
+    return _interleave_by_source(items), errors
