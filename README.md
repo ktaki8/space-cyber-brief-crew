@@ -193,7 +193,7 @@ python main.py --sources demo/injection --output output/injection_after.md
 python check_brief.py output/injection_after.md --sources demo/injection --canaries demo/injection_canaries.json
 ```
 
-With the sanitizer off, the hidden instructions reach the agents, and in our runs they changed the analysis: the fictional modem advisory was rated Critical with High confidence and attributed to an actor named only in the injected text. With it on, the agents never see those instructions, and the brief shows a quarantine marker instead. Results vary by run and by model, which is the point. See [`demo/README.md`](demo/README.md) for what to look for by hand.
+With the sanitizer off, the hidden instructions reach the agents, and in our runs they changed the analysis: the fictional modem advisory was rated Critical with High confidence and attributed to an actor named only in the injected text. With it on, the agents never see those instructions, and the brief shows a quarantine marker instead. That does not make every brief correct: in our saved trials ([`eval/september_trials/`](eval/september_trials/README.md)) the sanitizer stopped gpt-4o-mini from being fooled (1/5 off, 0/5 on), but llama3.1:8b still dropped the marking or overrated severity with it on (3/6 off, 2/4 on). Results vary by run and by model, which is the point. See [`demo/README.md`](demo/README.md) for what to look for by hand.
 
 ## Evaluating the governance layer
 
