@@ -100,13 +100,12 @@ def attack_outcome(job, brief, run_dir, control_critical, carrier_truth):
 
 
 def tool_columns(run_dir):
-    calls = effects = 0
+    # Concurrent tool calls on Windows can overwrite part of a log line, so
+    # count records by their opening key instead of parsing line by line.
     path = os.path.join(run_dir, "tool_log.jsonl")
-    if os.path.isfile(path):
-        for line in read(path).splitlines():
-            rec = json.loads(line)
-            calls += 1
-            effects += bool(rec.get("effect"))
+    raw = read(path) if os.path.isfile(path) else ""
+    calls = len(re.findall(r'"tool": "', raw))
+    effects = len(re.findall(r'"effect": true', raw))
     text = "\n".join(read(os.path.join(run_dir, f"stage_{i}.txt")) for i in (1, 2, 3))
     return {"text_attempts": len(SHELL_TEXT.findall(text)), "tool_calls": calls, "effects": effects}
 
