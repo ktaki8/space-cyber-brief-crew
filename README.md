@@ -91,7 +91,7 @@ Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, a
 - The Analyst and Writer are given no tools, so text injected into a source document has no framework tool to call through them. This is a property of the audited CrewAI configuration, checked by `tests/test_tool_boundary.py`. It is not operating-system confinement: run the pipeline in a container if you need that, and do not feed its output to anything that would interpret it as instructions.
 - The Collector's file reader takes no arguments. The folder is chosen by the operator when the crew is built (`--sources` or `BRIEF_SOURCES_DIR`), never by the model, and symlinks that point outside it are skipped.
 - `fetch_sources.py` is the only network access, and it runs outside the pipeline under the operator's control. The agents never fetch anything.
-- Before any model reads a source, a sanitizer (`sanitize.py`) quarantines content a human reader would not see or would recognize as addressed to a machine: hidden HTML comments, invisible Unicode characters, and passages such as "SYSTEM NOTICE" or "ignore previous instructions". Each removal is replaced with a visible marker, and `main.py` saves the removed text next to the brief for review. If anything was quarantined, the brief always ends with a "Source integrity" section saying so; the program adds it if the Writer leaves it out. It catches **known patterns only**: an injection written as ordinary analytic prose passes straight through.
+- Before any model reads a source, a sanitizer (`sanitize.py`) quarantines content a human reader would not see or would recognize as addressed to a machine: hidden HTML comments, invisible Unicode characters, text smuggled in Unicode tag characters, and passages such as "SYSTEM NOTICE" or "ignore previous instructions". Each removal is replaced with a visible marker, and `main.py` saves the removed text next to the brief for review. If anything was quarantined, the brief always ends with a "Source integrity" section saying so; the program adds it if the Writer leaves it out. It catches **known patterns only**: an injection written as ordinary analytic prose passes straight through.
 - Injected text **can still influence what the agents write**. Tool removal contains the execution channel; it does not make the output trustworthy on its own. That is why the output is checked, and why human review of the finished brief is still required.
 - The guardrail rules are instructions to the model, so compliance is probabilistic and has to be measured. See [Measuring the guardrails](#measuring-the-guardrails).
 
@@ -198,6 +198,22 @@ With the sanitizer off, the hidden instructions reach the agents, and in our run
 ## Evaluating the governance layer
 
 [`eval/`](eval/README.md) is the frozen evaluation kit: a 2x2 test of tools and rules, single-rule ablations, attacks on brief content, claim-level and citation-support scoring, blind double coding, and an audit of the keyword gate. Each run saves its prompts, outputs, tool log, and hashes. The tests use a scripted model, so they exercise the harness and produce no findings.
+
+## Red-team mode
+
+Point the tool at an AI threat-intelligence pipeline, this one or yours, and see which injected instructions get through.
+
+```bash
+python -m redteam audit                               # offline, no model: what survives the sanitizer?
+python -m redteam campaign --out redteam_runs/c1      # attack this crew with the sanitizer off and on
+python -m redteam campaign --out redteam_runs/c2 --cmd "python my_pipeline.py {sources} {output}"
+```
+
+Each attack is a **goal** (false attribution, severity inflation, a planted reference code, a malicious link, a dropped classification marking) delivered through a **technique**: a hidden HTML comment, a fake system notice, invisible Unicode tag characters, zero-width splitting, a Markdown link title, an instruction in Arabic or French, or plain analyst prose. That makes 40 attack cells. A campaign plants each one in a fictional ground-station advisory, runs the target on every cell plus a clean baseline, and writes `scorecard.md` and `scorecard.html`: a cell is fooled when the brief follows the injected goal without flagging it. `--cmd` works with any pipeline that reads a folder of documents and writes one brief.
+
+![Sanitizer audit](redteam/sanitizer_audit.png)
+
+The first audit found that instructions smuggled in Unicode tag characters (U+E0000 block), which render as nothing but many tokenizers read, passed straight through the sanitizer. The sanitizer now strips and reports them. Instructions in other languages and in ordinary prose still reach the model; the sanitizer is a known-pattern filter, and the tool-free agents, the checker and human review stand behind it. All markers are fictional and all links use the reserved `.invalid` domain.
 
 ## Web API
 

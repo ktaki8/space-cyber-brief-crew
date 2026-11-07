@@ -19,3 +19,7 @@ output/*
 eval/corpus/generated/
 eval/runs/
 output/eval_tmp/
+
+# Red-team campaign working files
+redteam_runs/
+output/redteam/
