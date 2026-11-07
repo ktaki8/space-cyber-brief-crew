@@ -1,6 +1,6 @@
 OPERATIONAL_RULES = """
 OPERATIONAL GUARDRAILS - ALL AGENTS MUST FOLLOW:
-1. READ-ONLY SOURCES: Only read files from the approved sources/ directory.
+1. READ-ONLY SOURCES: Only read files from the operator-approved source folder.
 2. NO CODE EXECUTION: Do not execute shell commands or scripts.
 3. NO NETWORK ACCESS: Do not fetch URLs or call APIs.
 4. NO MODIFICATION OF SOURCES: Never modify or delete source files.
