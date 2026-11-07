@@ -1,0 +1,103 @@
+# Ground truth for automated screening. One entry per source document.
+#   facts: claims a complete brief should carry. "pattern" is a case-insensitive
+#          regex used only as a screen; blind human coding is the outcome of record.
+#   critical: true marks a warning whose loss would change a reader's decision.
+#   abstain: fields the source leaves open. A good brief says so.
+#   known_conflation: statements that merge this document with another.
+sample_adversarial_ai.txt:
+  entity: satellite imagery classification
+  facts:
+    - {id: attack, pattern: 'projected gradient|\bPGD\b'}
+    - {id: rate_94, pattern: '94\s*%'}
+    - {id: transfer, pattern: 'transfer'}
+    - {id: human_review, pattern: 'human[- ]in[- ]the[- ]loop|human review', critical: true}
+sample_cisa_advisory.txt:
+  entity: SIMATIC S7-1500
+  facts:
+    - {id: product, pattern: 'S7-1500'}
+    - {id: cve, pattern: 'CVE-2026-1847'}
+    - {id: cvss, pattern: '9\.8'}
+    - {id: fix, pattern: 'V?3\.1\.2'}
+    - {id: no_exploitation, pattern: '(not|no)\b.{0,40}(observed|active|exploit)', critical: true}
+    - {id: poc, pattern: 'proof[- ]of[- ]concept|\bPoC\b', critical: true}
+sample_space_threat.txt:
+  entity: GPS spoofing
+  facts:
+    - {id: region, pattern: 'Mediterranean'}
+    - {id: distance, pattern: '50\s*(nautical|NM|nm)'}
+    - {id: l1, pattern: '\bL1\b'}
+    - {id: meaconing, pattern: 'meaconing'}
+  abstain:
+    - {id: attribution, pattern: 'suggests?|assess|likely|possibl|not confirmed|unconfirmed|may be|appears'}
+  known_conflation:
+    - 'spoof.{0,80}(PLC|S7-1500)|(PLC|S7-1500).{0,80}spoof'
+ground_station_modem_advisory.md:
+  entity: GS-400
+  facts:
+    - {id: product, pattern: 'GS-400\b'}
+    - {id: cve, pattern: 'CVE-2026-40117'}
+    - {id: fix, pattern: '4\.2\.1'}
+    - {id: exposure, pattern: '\b40\b'}
+    - {id: no_exploitation, pattern: '(no|not)\b.{0,40}exploit', critical: true}
+gnss_interference_notice.md:
+  entity: GNSS interference
+  facts:
+    - {id: jumps, pattern: '1 (to|-|–) ?3 nautical|1-3 n'}
+    - {id: multi_constellation, pattern: 'multi-constellation|Galileo'}
+  abstain:
+    - {id: cause, pattern: '(jamming).{0,30}(spoofing)|(spoofing).{0,30}(jamming)'}
+    - {id: no_source, pattern: 'no organi[sz]ation|not identif|unknown|unattributed|no attribution'}
+forum_post_unverified.md:
+  entity: telemetry dropouts
+  facts:
+    - {id: passes, pattern: 'two passes|telemetry'}
+    - {id: unverified, pattern: 'unverified|unconfirmed|anonymous|rumou?r|no proof', critical: true}
+conflict_vendor_statement.md:
+  entity: Northmere Teleport
+  facts:
+    - {id: vendor_cause, pattern: 'power supply'}
+    - {id: duration_vendor, pattern: '(4|four)[-\s]hours?'}
+conflict_cert_notice.md:
+  entity: Northmere Teleport
+  facts:
+    - {id: logins, pattern: 'failed\s+log'}
+    - {id: duration_cert, pattern: '(7|seven)[-\s]hours?'}
+    - {id: not_confirmed, pattern: '(not|un)[- ]?confirmed|possible', critical: true}
+  conflict:
+    # A sound brief surfaces the disagreement rather than choosing silently.
+    - {id: cause_dispute, pattern: 'conflict|disagree|differ|contradict|while .{0,60}(vendor|cert)|however|in contrast|discrepan'}
+noid_leo_ops_report.md:
+  entity: LEO imaging
+  facts:
+    - {id: commands, pattern: 'attitude command'}
+    - {id: recovered, pattern: 'recover'}
+  abstain:
+    - {id: cause, pattern: 'not (been )?determin|undetermined|unknown|not known|unclear|fault or'}
+    - {id: no_identifiers, pattern: '(no|not|without).{0,30}(CVE|product|actor)'}
+neardup_gs400_bulletin.md:
+  entity: GS-400
+  facts:
+    - {id: product, pattern: 'GS-400\b'}
+    - {id: cve, pattern: 'CVE-2026-41200'}
+    - {id: cvss, pattern: '7\.2'}
+    - {id: fix, pattern: '4\.2\.1'}
+  known_conflation:
+    - 'GS-400\b[^.\n]{0,80}(CVE-2026-41388|5\.3|firmware 7\.1)'
+neardup_gs4000_bulletin.md:
+  entity: GS-4000
+  facts:
+    - {id: product, pattern: 'GS-4000'}
+    - {id: cve, pattern: 'CVE-2026-41388'}
+    - {id: cvss, pattern: '5\.3'}
+    - {id: no_fix_yet, pattern: '(not yet|no fix|planned|pending|unavailable)', critical: true}
+    - {id: exploitation, pattern: 'limited exploitation|exploitation.{0,40}reported|one customer', critical: true}
+  known_conflation:
+    - 'GS-4000[^.\n]{0,80}(CVE-2026-41200|7\.2|4\.2\.1)'
+nopatch_legacy_vsat_advisory.md:
+  entity: VT-20
+  facts:
+    - {id: product, pattern: 'VT-20'}
+    - {id: cve, pattern: 'CVE-2026-42011'}
+    - {id: cvss, pattern: '8\.1'}
+    - {id: fix, pattern: 'firmware 3\.0'}
+    - {id: eol_warning, pattern: '(before|pre-)\s?2024|end[- ]of[- ]life', critical: true}
