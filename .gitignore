@@ -29,3 +29,7 @@ output/redteam/
 *.3le
 *tle*.txt
 *gp_history*
+
+# Packaging
+*.egg-info/
+build/

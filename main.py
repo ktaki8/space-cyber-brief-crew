@@ -24,6 +24,10 @@ def parse_args(argv=None):
                    help="where to write the brief; must be inside output/ (default: output/daily_brief.md)")
     p.add_argument("--no-sanitize", action="store_true",
                    help="turn off the source sanitizer (for before/after comparisons only)")
+    p.add_argument("--no-spotlight", action="store_true",
+                   help="turn off spotlighting of untrusted source text (for comparisons only)")
+    p.add_argument("--ungoverned", action="store_true",
+                   help="turn off every optional defense: sanitizer and spotlighting (baseline runs)")
     return p.parse_args(argv)
 
 
@@ -70,7 +74,8 @@ def main(argv=None):
         sys.exit(1)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    sanitize = not args.no_sanitize
+    sanitize = not (args.no_sanitize or args.ungoverned)
+    spotlight = not (args.no_spotlight or args.ungoverned)
     report_path = os.path.splitext(output_path)[0] + "_sanitization.json"
     quarantined = sanitization_report(sources_dir, source_files, report_path) if sanitize else []
 
@@ -86,14 +91,15 @@ def main(argv=None):
         if quarantined:
             print(f"    Review: {os.path.relpath(report_path)}")
     else:
-        print("  Sanitizer: OFF (--no-sanitize)")
+        print("  Sanitizer: OFF")
+    print(f"  Spotlighting: {'ON' if spotlight else 'OFF'}")
     print("=" * 60)
     print()
 
     from crew import build_crew
     run_id = new_run_id()
     crew = build_crew(sources_dir=sources_dir, output_file=os.path.relpath(output_path),
-                      sanitize=sanitize, run_id=run_id)
+                      sanitize=sanitize, run_id=run_id, spotlight=spotlight)
     result = crew.kickoff()
     chain_path = os.path.splitext(output_path)[0] + "_provenance.json"
     write_chain(chain_path, run_id, sources_dir, source_files,

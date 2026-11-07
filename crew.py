@@ -1,11 +1,13 @@
 import os
 import re
+import secrets
 import yaml
 from datetime import datetime, timezone
 from crewai import Agent, Task, Crew, Process, LLM
 from tools.file_reader import FileReaderTool, SOURCES_DIR, list_source_files
 from guardrails import get_guardrail_prompt
 from sanitize import sanitize_text
+from briefaudit.sanitizer import SPOTLIGHT_RULE
 from check_brief import citation_status
 from plain_output import strip_emoji
 from conditions import Condition, SHIPPED, TOPOLOGY_SINGLE
@@ -127,7 +129,8 @@ def build_llm():
 
 
 def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
-               condition: Condition = SHIPPED, llm=None, extra_tools=None, run_id=None):
+               condition: Condition = SHIPPED, llm=None, extra_tools=None, run_id=None,
+               spotlight=None):
     """Build the crew. With the defaults this is the shipped, governed pipeline.
 
     condition, llm, and extra_tools exist for the evaluation (eval/): they
@@ -139,6 +142,10 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
     agent_configs = load_yaml(os.path.join(config_dir, "agents.yaml"))
     task_configs = load_yaml(os.path.join(config_dir, "tasks.yaml"))
     guardrails = get_guardrail_prompt(exclude=condition.excluded_rules)
+    spotlight = condition.spotlight if spotlight is None else spotlight
+    tag = f"untrusted-{secrets.token_hex(4)}" if spotlight else ""
+    if tag:
+        guardrails += "\n\n" + SPOTLIGHT_RULE.format(tag=tag)
     run_id = run_id or new_run_id()
     tle_catalog = None
     if condition.sparta and os.getenv("ORBITAL_TLE"):
@@ -146,7 +153,7 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
         tle_catalog = Catalog.from_file(os.getenv("ORBITAL_TLE"))
 
     resolved_sources = resolve_sources_dir(sources_dir)
-    file_reader = FileReaderTool(sources_dir=resolved_sources, sanitize=sanitize)
+    file_reader = FileReaderTool(sources_dir=resolved_sources, sanitize=sanitize, spotlight_tag=tag)
     quarantined = quarantined_sources(resolved_sources) if sanitize else {}
     source_names = list_source_files(resolved_sources)
     llm = llm if llm is not None else build_llm()

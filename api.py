@@ -176,3 +176,122 @@ def latest_brief():
                 brief = f.read()
             return {"last_run": _last_run, "fallback": is_fallback, "brief_markdown": _clean_brief(brief)}
     raise HTTPException(status_code=404, detail="No brief has been generated yet.")
+
+
+# ---------------------------------------------------------------------------
+# Audit dashboard (/dashboard). Auditing is free and runs no model, so it
+# needs no key. The brief can be pasted in; sources can only be one of the
+# named folders below, never an arbitrary path from the request.
+# ---------------------------------------------------------------------------
+from fastapi.responses import FileResponse  # noqa: E402
+
+from briefaudit import intel as _intel  # noqa: E402
+from briefaudit.checks import check as _audit_check, load_canaries as _load_canaries  # noqa: E402
+from briefaudit.corpus import load_corpus as _load_corpus  # noqa: E402
+from briefaudit.report import brief_to_html as _brief_html, source_to_html as _source_html  # noqa: E402
+
+SOURCE_SETS = {
+    "demo/injection": "Injection demo (4 fictional documents, 3 with hidden instructions)",
+    "sources": "Sample advisories (space, ground, link)",
+    "corpora/live": "Live CISA advisories (after fetch_sources.py)",
+}
+BRIEF_DIRS = ("output", "demo/audit_example", "demo")
+CANARIES = "demo/injection_canaries.json"
+_demo_lock = threading.Lock()
+
+
+class AuditRequest(BaseModel):
+    sources: str
+    brief_path: str | None = None
+    brief_text: str | None = None
+    brief_format: bool = True
+    online: bool = False
+
+
+class DemoRequest(BaseModel):
+    defenses: bool = True
+
+
+def _briefs():
+    found = []
+    for d in BRIEF_DIRS:
+        if os.path.isdir(d):
+            found += [os.path.join(d, f) for f in sorted(os.listdir(d))
+                      if f.endswith(".md") and not f.startswith(".") and f.lower() != "readme.md"]
+    return found
+
+
+def _audit_payload(brief, sources, brief_format=True, online=False):
+    corpus = _load_corpus(sources)
+    if not corpus:
+        raise HTTPException(status_code=404, detail=f"No documents in {sources}.")
+    must, review = _load_canaries(CANARIES) if sources == "demo/injection" else ([], [])
+    rep = _audit_check(brief, corpus, must, review, profile="brief" if brief_format else "generic", online=online)
+    return {
+        "failed": rep.failed,
+        "results": rep.results,
+        "claims_summary": rep.claim_summary,
+        "claims": [c.as_dict() for c in rep.claims],
+        "brief_html": _brief_html(brief, rep.claims),
+        "sources": [{"name": n, "html": _source_html(t)} for n, t in corpus.items()],
+    }
+
+
+@app.get("/dashboard")
+def dashboard():
+    return FileResponse(os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard", "index.html"))
+
+
+@app.get("/api/audit/options")
+def audit_options():
+    idx = _intel.load_index()
+    return {
+        "source_sets": [{"id": k, "label": v, "available": bool(_load_corpus(k))} for k, v in SOURCE_SETS.items()],
+        "briefs": _briefs(),
+        "reference_data": {"built": idx.get("built"), **idx.get("versions", {})},
+        "live_demo": bool(os.getenv("CREW_ACCESS_KEY")) and bool(
+            os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY") or
+            (os.getenv("MODEL") or "").startswith("ollama/")),
+    }
+
+
+@app.post("/api/audit")
+def audit(req: AuditRequest):
+    if req.sources not in SOURCE_SETS:
+        raise HTTPException(status_code=400, detail="Unknown source set.")
+    if req.brief_text:
+        brief = req.brief_text[:200_000]
+    elif req.brief_path in _briefs():
+        with open(req.brief_path, "r", encoding="utf-8") as f:
+            brief = f.read()
+    else:
+        raise HTTPException(status_code=400, detail="Choose a listed brief or paste one.")
+    return _audit_payload(brief, req.sources, req.brief_format, req.online)
+
+
+@app.post("/api/demo/injection")
+def injection_demo(req: DemoRequest, x_access_key: str | None = Header(default=None)):
+    """Run the pipeline on demo/injection with defenses on or off, then audit it.
+
+    Same protections as /api/run-crew: access key required, one run at a time."""
+    _check_access_key(x_access_key)
+    if not _demo_lock.acquire(blocking=False):
+        raise HTTPException(status_code=409, detail="A demo run is already in progress.")
+    try:
+        from crew import build_crew
+        name = "injection_after.md" if req.defenses else "injection_before.md"
+        out = os.path.join("output", name)
+        os.makedirs("output", exist_ok=True)
+        build_crew(sources_dir="demo/injection", output_file=out,
+                   sanitize=req.defenses, spotlight=req.defenses).kickoff()
+        with open(out, "r", encoding="utf-8") as f:
+            brief = f.read()
+        payload = _audit_payload(brief, "demo/injection")
+        payload["brief_path"] = out
+        return payload
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Demo run failed: {e}")
+    finally:
+        _demo_lock.release()

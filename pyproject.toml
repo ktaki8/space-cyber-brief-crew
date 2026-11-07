@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "briefaudit"
+dynamic = ["version"]
+description = "Verify AI-written threat intelligence against its sources, MITRE ATT&CK/ATLAS, SPARTA, CISA KEV, NVD and orbital data."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Khadija Taki" }]
+requires-python = ">=3.10"
+dependencies = ["pyyaml"]
+keywords = ["cyber threat intelligence", "llm", "prompt injection", "mitre att&ck", "sparta", "audit"]
+
+[project.optional-dependencies]
+orbital = ["sgp4", "matplotlib"]
+
+[project.scripts]
+briefaudit = "briefaudit.cli:main"
+
+[tool.setuptools]
+packages = ["briefaudit", "sparta", "orbital"]
+
+[tool.setuptools.package-data]
+briefaudit = ["data/*.json"]
+sparta = ["data/*.json", "NOTICE.md"]
+
+[tool.setuptools.dynamic]
+version = { attr = "briefaudit.__version__" }

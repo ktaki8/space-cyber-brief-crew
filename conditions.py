@@ -23,6 +23,7 @@ class Condition:
     code_enforcement: bool = True   # citation retry, date, run ID, integrity note
     topology: str = TOPOLOGY_CREW
     sparta: bool = False            # SPARTA catalog for the Analyst, lookups in code
+    spotlight: bool = False         # wrap sources in a per-run untrusted-data boundary
 
 
-SHIPPED = Condition("shipped", sparta=True)
+SHIPPED = Condition("shipped", sparta=True, spotlight=True)

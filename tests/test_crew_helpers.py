@@ -16,7 +16,8 @@ def test_date_added_when_missing():
 def test_integrity_note_added_only_when_needed():
     from crew import ensure_integrity_note, quarantined_sources
     q = quarantined_sources("demo/injection")
-    assert set(q) == {"forum_post_unverified.md", "ground_station_modem_advisory.md"}
+    assert set(q) == {"forum_post_unverified.md", "ground_station_modem_advisory.md",
+                      "telemetry_vendor_bulletin.md"}
     out = ensure_integrity_note("# Brief\nbody\n", q)
     assert "## Source integrity" in out and "ground_station_modem_advisory.md" in out
     assert ensure_integrity_note("# Brief\nContent was quarantined.\n", q) == "# Brief\nContent was quarantined.\n"

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brief Audit Console</title>
+<style>
+:root{--navy:#0D2340;--ink:#17212B;--muted:#5B6875;--line:#DCE2E8;--bg:#F3F6F9;--card:#FFFFFF;
+--teal:#1C8C99;--orange:#E8590C;--ok:#1B7F4B;--okbg:#E3F4EA;--part:#9A6200;--partbg:#FFF1D6;
+--bad:#B3261E;--badbg:#FCE4E2;--abs:#6B3FA0;--absbg:#EFE6FA}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#E6EBF0;--muted:#A3AFBC;--line:#2C3743;
+--bg:#0F161D;--card:#17202A;--okbg:#14301F;--partbg:#3A2C10;--badbg:#3D1715;--absbg:#2A1D3D;
+--ok:#6DD39A;--part:#F2B84B;--bad:#FF8A80;--abs:#C9A6F5}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+header{background:var(--navy);color:#fff;padding:14px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px}
+header h1{font-size:19px;margin:0;font-weight:700}
+header p{margin:0;color:#A9B8CC;font-size:13px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end;padding:14px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:5px;padding:7px 9px}
+select{min-width:240px}
+button{font:inherit;font-weight:600;border:0;border-radius:5px;padding:8px 14px;cursor:pointer;color:#fff;background:var(--teal)}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.attack{background:var(--orange)}
+button:disabled{opacity:.5;cursor:wait}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,.c:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.live{display:none;gap:8px;align-items:end;margin-left:auto}
+.live.on{display:flex}
+main{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr) minmax(0,1fr);gap:16px;padding:16px 20px}
+@media (max-width:1100px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.card h2{font-size:15px;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13px}
+.src{margin:8px 0}
+.src summary{cursor:pointer;font-weight:600;font-size:14px}
+.src pre{white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);
+border-radius:4px;padding:10px;margin:6px 0 0;max-height:300px;overflow:auto}
+.q{background:var(--badbg);color:var(--bad);text-decoration:line-through}
+.brief h2,.brief h3,.brief h4{font-size:15px;margin:16px 0 4px}
+.brief p,.brief li{margin:4px 0}
+.c{border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px solid transparent}
+.c-supported{background:var(--okbg);border-color:var(--ok)}
+.c-partial{background:var(--partbg);border-color:var(--part)}
+.c-unsupported{background:var(--badbg);border-color:var(--bad)}
+.c-absence{background:var(--absbg);border-color:var(--abs);border-bottom-style:dashed}
+.c-judgment{border-color:var(--line)}
+.c-judgment-unsupported{background:var(--badbg);border-color:var(--bad);border-bottom-style:dotted}
+.c.active{outline:2px solid var(--teal)}
+.verdict{font-size:26px;font-weight:800;margin:0}
+.verdict.fail{color:var(--bad)}.verdict.pass{color:var(--ok)}
+.tally{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+.tally div{text-align:center;border:1px solid var(--line);border-radius:5px;padding:6px 2px}
+.tally b{display:block;font-size:20px}.tally span{font-size:11px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:6px 4px;border-top:1px solid var(--line);vertical-align:top}
+.lv{font-weight:700;font-size:11.5px;white-space:nowrap}.FAIL{color:var(--bad)}.WARN{color:var(--part)}.PASS{color:var(--ok)}.INFO{color:var(--muted)}
+#evidence blockquote{margin:8px 0;padding:8px 10px;border-left:3px solid var(--teal);background:var(--bg);font-size:13.5px}
+.miss{color:var(--bad);font-weight:600}
+.empty{color:var(--muted);font-size:14px;padding:20px 0}
+.status{font-size:13px;color:var(--muted);margin-left:6px}
+textarea{width:100%;min-height:120px;margin-top:8px;display:none}
+textarea.on{display:block}
+@media (max-width:700px){.controls{padding:12px 16px}.controls>div{width:100%}select{min-width:0;width:100%}
+.live{flex-wrap:wrap;margin-left:0;width:100%}.live>div,.live button{flex:1 1 140px}main{padding:12px 16px}
+.tally{grid-template-columns:repeat(3,1fr)}header{padding:12px 16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Brief Audit Console</h1>
+  <p>Space-Cyber Brief Crew: every claim checked against its sources, MITRE ATT&amp;CK and ATLAS, SPARTA, and CISA KEV.</p>
+</header>
+
+<div class="controls">
+  <div><label for="sources">Source documents</label><select id="sources"></select></div>
+  <div><label for="brief">Brief to audit</label><select id="brief"></select></div>
+  <div><button id="run">Audit brief</button><button class="alt" id="paste" type="button">Paste a brief</button></div>
+  <span class="status" id="status" role="status"></span>
+  <div class="live" id="live">
+    <div><label for="key">Access key</label><input id="key" type="password" autocomplete="off" size="12"></div>
+    <button class="attack" id="off">Run attack, defenses off</button>
+    <button id="on">Run attack, defenses on</button>
+  </div>
+</div>
+<div style="padding:0 20px"><textarea id="pasted" placeholder="Paste any AI-written threat report in Markdown. Nothing is sent to a model."></textarea></div>
+
+<main>
+  <section class="card" aria-labelledby="h-src">
+    <h2 id="h-src">Sources</h2>
+    <p class="sub">Struck-through text was quarantined as a suspected prompt injection. It never reaches the agents and never counts as evidence.</p>
+    <div id="srclist" class="empty">Choose sources and a brief, then audit.</div>
+  </section>
+  <section class="card brief" aria-labelledby="h-brief">
+    <h2 id="h-brief">Brief, claim by claim</h2>
+    <p class="sub">Green: supported by a cited passage. Amber: partly supported. Red: unsupported or contains a detail found in no source. Purple: an absence claim to confirm. Underlined: analyst judgment.</p>
+    <div id="briefbody" class="empty">No brief audited yet.</div>
+  </section>
+  <section aria-label="Audit results" style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <div class="card">
+      <p class="verdict" id="verdict">&nbsp;</p>
+      <div class="tally" id="tally"></div>
+      <div id="evidence"><p class="sub">Select a highlighted sentence to see the passage behind it.</p></div>
+    </div>
+    <div class="card"><h2>Checks</h2><table id="checks"><tbody><tr><td class="empty">Nothing yet.</td></tr></tbody></table>
+      <p class="sub" id="refdata"></p></div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const LABELS = {supported:"Supported", partial:"Partial", unsupported:"Unsupported", absence:"Absence claim",
+  judgment:"Judgment", "judgment-unsupported":"Judgment with unsourced detail"};
+let claims = [];
+const esc = s => String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+async function api(path, body, headers = {}) {
+  const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json", ...headers},
+    body: JSON.stringify(body)} : {});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || ("Request failed (" + r.status + ")"));
+  return data;
+}
+
+async function init() {
+  try {
+    const o = await api("/api/audit/options");
+    $("sources").innerHTML = o.source_sets.map(s => `<option value="${esc(s.id)}" ${s.available ? "" : "disabled"}>${esc(s.label)}${s.available ? "" : " (empty)"}</option>`).join("");
+    $("brief").innerHTML = o.briefs.map(b => `<option value="${esc(b)}">${esc(b)}</option>`).join("");
+    const r = o.reference_data;
+    if (r.built) $("refdata").textContent = `Reference data: ATT&CK v${r.attack_enterprise}, ATLAS ${r.atlas}, KEV catalog ${r.kev}.`;
+    if (o.live_demo) $("live").classList.add("on");
+    const ex = o.briefs.find(b => b.includes("flawed_brief"));
+    if (ex) { $("brief").value = ex; $("sources").value = "demo/injection"; }
+  } catch (e) { $("status").textContent = e.message; }
+}
+
+function render(d) {
+  claims = d.claims;
+  $("verdict").textContent = d.failed ? "FAIL" : "PASS";
+  $("verdict").className = "verdict " + (d.failed ? "fail" : "pass");
+  const s = d.claims_summary || {};
+  $("tally").innerHTML = [["supported","Supported"],["partial","Partial"],["unsupported","Unsupported"],
+    ["absence_claims","Absence"],["judgment","Judgment"]].map(([k,l]) => `<div><b>${s[k] ?? 0}</b><span>${l}</span></div>`).join("");
+  $("checks").innerHTML = "<tbody>" + d.results.map(r => `<tr><td class="lv ${r.level}">${r.level}</td><td>${esc(r.check)}</td><td>${esc(r.message)}</td></tr>`).join("") + "</tbody>";
+  $("briefbody").className = ""; $("briefbody").innerHTML = d.brief_html;
+  $("srclist").className = ""; $("srclist").innerHTML = d.sources.map(x =>
+    `<details class="src" ${x.html.includes('class="q"') ? "open" : ""}><summary>${esc(x.name)}</summary><pre>${x.html}</pre></details>`).join("");
+  $("evidence").innerHTML = '<p class="sub">Select a highlighted sentence to see the passage behind it.</p>';
+  document.querySelectorAll("#briefbody .c").forEach(el => {
+    el.addEventListener("click", () => show(el));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(el); } });
+  });
+  const first = document.querySelector("#briefbody .c-unsupported");
+  if (first) show(first);
+}
+
+function show(el) {
+  document.querySelectorAll(".c.active").forEach(x => x.classList.remove("active"));
+  el.classList.add("active");
+  const c = claims[el.dataset.i];
+  let h = `<h2>${esc(LABELS[c.label] || c.label)}</h2><p>${esc(c.text)}</p>`;
+  if (c.missing.length) h += `<p class="miss">Found in no source: ${c.missing.map(esc).join(", ")}</p>`;
+  if (c.evidence) h += `<p class="sub">Closest passage in ${esc(c.source)} (overlap ${c.score.toFixed(2)}):</p><blockquote>${esc(c.evidence)}</blockquote>`;
+  else h += `<p class="sub">No source passage shares meaningful wording with this claim.</p>`;
+  $("evidence").innerHTML = h;
+}
+
+async function busy(fn, msg) {
+  document.querySelectorAll("button").forEach(b => b.disabled = true);
+  $("status").textContent = msg;
+  try { await fn(); $("status").textContent = ""; }
+  catch (e) { $("status").textContent = e.message; }
+  finally { document.querySelectorAll("button").forEach(b => b.disabled = false); }
+}
+
+$("run").onclick = () => busy(async () => {
+  const pasted = $("pasted").classList.contains("on") && $("pasted").value.trim();
+  render(await api("/api/audit", {sources: $("sources").value, brief_path: pasted ? null : $("brief").value,
+    brief_text: pasted || null, brief_format: !pasted}));
+}, "Auditing...");
+$("paste").onclick = () => { $("pasted").classList.toggle("on"); if ($("pasted").classList.contains("on")) $("pasted").focus(); };
+const demo = defenses => busy(async () => {
+  $("sources").value = "demo/injection";
+  const d = await api("/api/demo/injection", {defenses}, {"X-Access-Key": $("key").value});
+  render(d);
+  await init(); $("brief").value = d.brief_path; $("sources").value = "demo/injection";
+}, defenses ? "Running the crew with every defense on (1 to 3 minutes)..." : "Running the crew with defenses off (1 to 3 minutes)...");
+$("off").onclick = () => demo(false);
+$("on").onclick = () => demo(true);
+init();
+</script>
+</body>
+</html>

@@ -11,33 +11,13 @@ from typing import Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel
 
-from sanitize import sanitize_text
+from briefaudit.sanitizer import sanitize_text, spotlight
+
+from briefaudit.corpus import list_source_files, SUPPORTED_EXTENSIONS  # noqa: F401
 
 # Absolute path to the default sources/ folder, resolved once at import.
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCES_DIR = os.path.realpath(os.path.join(REPO_ROOT, "sources"))
-SUPPORTED_EXTENSIONS = (".txt", ".md")
-
-
-def list_source_files(sources_dir: str) -> list[str]:
-    """Readable source files directly inside sources_dir, sorted.
-
-    Hidden files, unsupported extensions, subfolders, and symlinks that
-    resolve outside the folder are skipped. main.py and check_brief.py use
-    the same rule, so all three agree on what the corpus is.
-    """
-    root = os.path.realpath(sources_dir)
-    if not os.path.isdir(root):
-        return []
-    names = []
-    for filename in sorted(os.listdir(root)):
-        if filename.startswith(".") or not filename.endswith(SUPPORTED_EXTENSIONS):
-            continue
-        filepath = os.path.realpath(os.path.join(root, filename))
-        if os.path.dirname(filepath) != root or not os.path.isfile(filepath):
-            continue
-        names.append(filename)
-    return names
 
 
 class FileReaderInput(BaseModel):
@@ -55,6 +35,9 @@ class FileReaderTool(BaseTool):
     # Quarantine known injection patterns before the model sees the text.
     # Set by the operator (main.py --no-sanitize), never by the model.
     sanitize: bool = True
+    # Per-run boundary tag for spotlighting (empty string turns it off).
+    # Set by build_crew, never by the model.
+    spotlight_tag: str = ""
 
     def _run(self, **kwargs) -> str:
         # Any arguments the model tries to pass (such as a directory) are ignored.
@@ -71,7 +54,10 @@ class FileReaderTool(BaseTool):
                 if self.sanitize:
                     content = sanitize_text(content).text
                 content = content.strip()
-                results.append(f"=== SOURCE: {filename} ===\n{content}\n=== END: {filename} ===\n")
+                if self.spotlight_tag:
+                    results.append(spotlight(content, filename, self.spotlight_tag) + "\n")
+                else:
+                    results.append(f"=== SOURCE: {filename} ===\n{content}\n=== END: {filename} ===\n")
             except Exception as e:
                 results.append(f"=== SOURCE: {filename} ===\nError: {e}\n=== END: {filename} ===\n")
 
