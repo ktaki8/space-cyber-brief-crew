@@ -1,0 +1,8 @@
+# A bundle is the document set for one brief. Multi-document bundles are what
+# make conflation measurable. Add held-out real advisories as new bundles
+# (see eval/README.md), each with a truth file, and do not edit these after
+# the design is frozen.
+pilot_like: [sample_adversarial_ai.txt, sample_cisa_advisory.txt, sample_space_threat.txt]
+demo_mixed: [ground_station_modem_advisory.md, gnss_interference_notice.md, forum_post_unverified.md]
+conflict: [conflict_vendor_statement.md, conflict_cert_notice.md, noid_leo_ops_report.md]
+near_dup: [neardup_gs400_bulletin.md, neardup_gs4000_bulletin.md, nopatch_legacy_vsat_advisory.md]

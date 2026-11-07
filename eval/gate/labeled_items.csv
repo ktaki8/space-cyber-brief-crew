@@ -1,0 +1,59 @@
+id,split,group,lang,relevant,title,summary
+G001,dev,explicit,en,1,Satellite ground station modem default password,Internet-exposed ground station modems ship with a default login.
+G002,heldout,explicit,en,1,GPS spoofing near commercial ports,Vessels report GPS position jumps during transit.
+G003,dev,explicit,en,1,GNSS receiver firmware flaw,A firmware flaw lets crafted signals crash GNSS receivers.
+G004,heldout,explicit,en,1,Spacecraft flight software vulnerability,A flaw in open flight software affects spacecraft command handling.
+G005,dev,explicit,en,1,VSAT terminal hard-coded credentials,VSAT terminals contain a hard-coded maintenance account.
+G006,heldout,explicit,en,1,Orbital imaging provider breach,An orbital imaging provider reports a compromise of its customer portal.
+G007,dev,alias,en,1,Starlink terminal denial of service,Researchers crash user terminals with malformed frames.
+G008,heldout,alias,en,1,Viasat KA-SAT style modem wiper,Wiper malware targets modems in a broadband network.
+G009,dev,alias,en,1,Iridium pager traffic exposed,Unencrypted Iridium traffic can be read with commodity receivers.
+G010,heldout,alias,en,1,Inmarsat maritime terminal flaw,A flaw in shipboard terminals allows configuration changes.
+G011,dev,alias,en,1,BeiDou receiver parsing bug,Crafted navigation messages crash BeiDou receivers.
+G012,heldout,alias,en,1,GLONASS timing anomaly advisory,Operators report timing errors in GLONASS-dependent equipment.
+G013,dev,alias,en,1,SATCOM terminal authentication bypass,An authentication bypass affects SATCOM terminals used at sea.
+G014,heldout,alias,en,1,TT&C software privilege escalation,A flaw in TT&C software permits privilege escalation on operator consoles.
+G015,dev,alias,en,1,CubeSat bus command injection,A CubeSat command parser accepts unauthenticated uplinked commands.
+G016,heldout,alias,en,1,LEO constellation operator phishing,A LEO constellation operator's engineers are targeted by phishing.
+G017,dev,alias,en,1,ADS-B message injection,Forged ADS-B messages appear on air traffic displays.
+G018,heldout,alias,en,1,Mission control system exposed,A mission control system for earth observation is reachable from the internet.
+G019,dev,alias,en,1,Telemetry downlink decoder overflow,A decoder overflow affects telemetry downlink processing at teleports.
+G020,heldout,alias,en,1,Teleport antenna controller flaw,A flaw affects antenna control units at a commercial teleport.
+G021,dev,no_keyword,en,1,Payload operations center ransomware,Ransomware disrupted a payload operations center during a contact window.
+G022,heldout,no_keyword,en,1,Launch range safety network intrusion,Attackers reached a network at a launch range.
+G023,dev,no_keyword,en,1,Timing receiver leap second bug,A bug in timing receivers disrupts telecom synchronization.
+G024,heldout,no_keyword,en,1,Earth observation imagery tampering,Tampered imagery entered an analysis pipeline.
+G025,dev,language,fr,1,Vulnérabilité dans un terminal satellite,Une faille affecte des terminaux de communication par satellite.
+G026,heldout,language,fr,1,Brouillage GNSS signalé en mer,Des navires signalent un brouillage du GNSS.
+G027,dev,language,es,1,Vulnerabilidad en estación terrestre de satélites,Una falla afecta a módems de estaciones terrestres.
+G028,heldout,language,es,1,Suplantación de señales GPS,Buques informan suplantación de señales de navegación por satélite.
+G029,dev,language,ar,1,ثغرة في محطة أرضية للأقمار الصناعية,تؤثر الثغرة على أجهزة المودم في المحطات الأرضية.
+G030,heldout,language,ar,1,تشويش على إشارات نظام تحديد المواقع,أبلغت السفن عن تشويش على إشارات الأقمار الصناعية.
+G031,dev,language,de,1,Schwachstelle in Satellitenterminals,Eine Lücke betrifft Bodenstationen und Satellitenmodems.
+G032,heldout,language,ru,1,Уязвимость в спутниковых терминалах,Ошибка затрагивает наземные станции спутниковой связи.
+G033,dev,language,zh,1,卫星地面站调制解调器漏洞,该漏洞影响暴露在互联网上的地面站设备。
+G034,heldout,language,ja,1,衛星通信端末の脆弱性,地上局の機器に影響する脆弱性が報告された。
+G035,dev,image_only,en,1,Advisory attached,
+G036,heldout,image_only,en,1,See graphic for affected terminals,Figure 1.
+G037,dev,image_only,en,1,Bulletin 2026-114,Details in the attached scan.
+G038,heldout,image_only,en,1,Weekly threat map,Map only.
+G039,dev,false_friend,en,0,Orbit project management app flaw,A flaw in the Orbit task manager exposes shared boards.
+G040,heldout,false_friend,en,0,GPS dog collar app leaks location,A pet tracker app exposes owners' accounts.
+G041,dev,false_friend,en,0,Satellite office VPN outage,A company's satellite office lost VPN access after an update.
+G042,heldout,false_friend,en,0,Phone navigation app crash,"A navigation app on phones crashes on malformed map files, GPS unaffected."
+G043,dev,false_friend,en,0,Disk space exhaustion in backup tool,A backup tool fails when disk space runs out.
+G044,heldout,false_friend,en,0,SDR meeting tool data exposure,A sales development (SDR) tool exposes contact lists.
+G045,dev,false_friend,en,0,Fitness watch GPS trail privacy,A fitness watch publishes GPS trails by default.
+G046,heldout,false_friend,en,0,Orbital sander recall portal hacked,A power tool maker's orbital sander recall site was defaced.
+G047,dev,false_friend,en,0,Satellite TV streaming app account takeover,Accounts on a satellite TV streaming app were taken over.
+G048,heldout,false_friend,en,0,Spatial database SQL injection,A spatial extension for a database allows SQL injection.
+G049,dev,unrelated,en,0,Web framework remote code execution,A remote code execution vulnerability affects a web framework.
+G050,heldout,unrelated,en,0,Email server authentication bypass,An authentication flaw affects a mail server.
+G051,dev,unrelated,en,0,Router firmware exploit in the wild,An exploit for home router firmware is being used.
+G052,heldout,unrelated,en,0,Supply chain attack on npm package,A vendor package was tampered with.
+G053,dev,unrelated,en,0,Hospital network ransomware,Ransomware disrupted hospital network services.
+G054,heldout,unrelated,en,0,Critical infrastructure water utility alert,A water utility's control network was scanned.
+G055,dev,unrelated,en,0,VPN appliance zero-day,A vulnerability in a VPN appliance is being exploited.
+G056,heldout,unrelated,en,0,Cloud identity misconfiguration,A misconfiguration exposes tokens.
+G057,dev,unrelated,fr,0,Vulnérabilité dans un navigateur,Exécution de code arbitraire à distance dans un navigateur web.
+G058,heldout,unrelated,es,0,Vulnerabilidad en servidor de correo,Una falla afecta a un servidor de correo.
