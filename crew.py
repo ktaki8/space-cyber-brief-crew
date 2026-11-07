@@ -9,6 +9,7 @@ from sanitize import sanitize_text
 from check_brief import citation_status
 from plain_output import strip_emoji
 from conditions import Condition, SHIPPED, TOPOLOGY_SINGLE
+import sparta
 from provenance import new_run_id
 
 DEFAULT_OUTPUT = os.path.join("output", "daily_brief.md")
@@ -189,7 +190,8 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
     )
 
     analyze_task = Task(
-        description=task_configs["analyze_threats"]["description"],
+        description=task_configs["analyze_threats"]["description"]
+        + (sparta.analyst_instruction() if condition.sparta else ""),
         expected_output=task_configs["analyze_threats"]["expected_output"],
         agent=analyst,
         context=[collect_task],
@@ -212,12 +214,19 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
         elif source_names and len(uncited) == len(source_names):
             problem = "The brief cites no sources."
             detail = " Cite the exact source file name in every item, choosing from: " + ", ".join(source_names) + "."
+        bad_sparta = sparta.unknown_ids(text) if condition.sparta else []
+        if not problem and bad_sparta:
+            problem = "The brief uses SPARTA IDs that do not exist: " + ", ".join(bad_sparta) + "."
+            detail = " Use only the IDs the analyst gave, copied exactly, or write 'SPARTA: none identified'."
         if problem and write_task.retry_count < GUARDRAIL_RETRIES:
             return (False, problem + detail)
         if problem:  # retries used up: keep the brief, but say so at the top
             text = f"> **Attribution warning:** {problem} Verify every item against the sources.\n\n" + text
         text = stamp_run_metadata(stamp_brief_date(text, today), run_id)
-        return (True, ensure_integrity_note(text, quarantined))
+        text = ensure_integrity_note(text, quarantined)
+        if condition.sparta:
+            text = sparta.append_reference(text)
+        return (True, text)
 
     # These two instructions belong to the code-enforced layer, so an arm with
     # that layer off must not receive them either.
@@ -229,7 +238,8 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
     ) if condition.code_enforcement else ""
 
     write_task = Task(
-        description=task_configs["write_brief"]["description"] + write_contract,
+        description=task_configs["write_brief"]["description"] + write_contract
+        + (sparta.WRITER_INSTRUCTION if condition.sparta else ""),
         expected_output=task_configs["write_brief"]["expected_output"],
         agent=writer,
         context=[analyze_task],

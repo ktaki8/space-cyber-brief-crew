@@ -1,0 +1,4226 @@
+{
+ "sparta_version": "v3.2",
+ "source": "https://sparta.aerospace.org",
+ "notice": "The Aerospace Corporation. This work is reproduced and distributed with the permission of The Aerospace Corporation.",
+ "techniques": {
+  "DE-0001": {
+   "name": "Disable Fault Management",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0020",
+    "CM0032",
+    "CM0042",
+    "CM0044"
+   ],
+   "indicators": [
+    "SMSR-16: Unexpected Fault Management Process Termination",
+    "SMSR-6: Unauthorized Fault Management Configuration Change Detected Outside Expected Time"
+   ]
+  },
+  "DE-0002": {
+   "name": "Disrupt or Deceive Downlink",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0005",
+    "CM0029",
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0070"
+   ],
+   "indicators": [
+    "ARFS-3: Invalid RF Command Lock",
+    "ARFS-6: Abnormal Signal Strength",
+    "CSNE-40: Unplanned Deactivation of Downlink Transmitter",
+    "CSNE-41: High Latency Detected in Downlink Communication",
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "CSNE-9: Unexpected Downlink Traffic Dropped or Disrupted",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration",
+    "SMSR-17: Telemetry Packet Drops Due to CPU or Memory Overload"
+   ]
+  },
+  "DE-0002.01": {
+   "name": "Inhibit Ground System Functionality",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0002",
+   "countermeasures": [
+    "CM0002",
+    "CM0005",
+    "CM0050",
+    "CM0070",
+    "CM0073"
+   ],
+   "indicators": [
+    "CSNE-40: Unplanned Deactivation of Downlink Transmitter",
+    "CSNE-41: High Latency Detected in Downlink Communication",
+    "CSNE-9: Unexpected Downlink Traffic Dropped or Disrupted",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration"
+   ]
+  },
+  "DE-0002.02": {
+   "name": "Jam Link Signal",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0002",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0034",
+    "CM0070",
+    "CM0074",
+    "CM0075",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084"
+   ],
+   "indicators": [
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "CSNE-9: Unexpected Downlink Traffic Dropped or Disrupted"
+   ]
+  },
+  "DE-0002.03": {
+   "name": "Inhibit Spacecraft Functionality",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0002",
+   "countermeasures": [
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0070"
+   ],
+   "indicators": [
+    "CSNE-40: Unplanned Deactivation of Downlink Transmitter",
+    "CSNE-9: Unexpected Downlink Traffic Dropped or Disrupted",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration"
+   ]
+  },
+  "DE-0003": {
+   "name": "On-Board Values Obfuscation",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": []
+  },
+  "DE-0003.01": {
+   "name": "Vehicle Command Counter (VCC)",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.02": {
+   "name": "Rejected Command Counter",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.03": {
+   "name": "Command Receiver On/Off Mode",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.04": {
+   "name": "Command Receivers Received Signal Strength",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.05": {
+   "name": "Command Receiver Lock Modes",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.06": {
+   "name": "Telemetry Downlink Modes",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration"
+   ]
+  },
+  "DE-0003.07": {
+   "name": "Cryptographic Modes",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-3: Unexpected Access to Cryptographic Keys",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "DE-0003.08": {
+   "name": "Received Commands",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.09": {
+   "name": "System Clock for Evasion",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0048",
+    "CM0069"
+   ],
+   "indicators": []
+  },
+  "DE-0003.10": {
+   "name": "GPS Ephemeris",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0066",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0003.11": {
+   "name": "Watchdog Timer (WDT) for Evasion",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure",
+    "GNTM-6: Unexpected Time Delta Detected",
+    "GNTM-7: Time Adjustment Commands Detected",
+    "WTRE-1: Reduced Watchdog Timer Reset Frequency",
+    "WTRE-2: Abnormal Frequency of Watchdog Timer Resets",
+    "WTRE-3: Watchdog Timer Status Disabled",
+    "WTRE-4: Watchdog Timer Timeout Modified to Unexpected Value"
+   ]
+  },
+  "DE-0003.12": {
+   "name": "Poison AI/ML Training for Evasion",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0003",
+   "countermeasures": [
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0049",
+    "CM0056",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0004": {
+   "name": "Masquerading",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0005",
+    "CM0030",
+    "CM0031",
+    "CM0034",
+    "CM0035",
+    "CM0052",
+    "CM0053",
+    "CM0054",
+    "CM0055"
+   ],
+   "indicators": [
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "CSNE-3: Backup Channel Activity Outside Scheduled Time Windows",
+    "CSNE-4: Unexpected Data Transfer Over Backup Channel While Primary Active",
+    "CSNE-5: Traffic Volume Spike on Backup Channel",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations"
+   ]
+  },
+  "DE-0005": {
+   "name": "Subvert Protections via Safe-Mode",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0006",
+    "CM0022",
+    "CM0029",
+    "CM0032",
+    "CM0035",
+    "CM0042",
+    "CM0044"
+   ],
+   "indicators": []
+  },
+  "DE-0006": {
+   "name": "Modify Whitelist",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0032",
+    "CM0039"
+   ],
+   "indicators": [
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "DE-0007": {
+   "name": "Evasion via Rootkit",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0069"
+   ],
+   "indicators": []
+  },
+  "DE-0008": {
+   "name": "Evasion via Bootkit",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0069"
+   ],
+   "indicators": []
+  },
+  "DE-0009": {
+   "name": "Camouflage, Concealment, and Decoys (CCD)",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0084",
+    "CM0085",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "DE-0009.01": {
+   "name": "Debris Field",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0009",
+   "countermeasures": [
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0084",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "DE-0009.02": {
+   "name": "Space Weather",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0009",
+   "countermeasures": [
+    "CM0085"
+   ],
+   "indicators": []
+  },
+  "DE-0009.03": {
+   "name": "Trigger Premature Intercept",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0009",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "DE-0009.04": {
+   "name": "Targeted Deception of Onboard SSA/SDA Sensors",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0009",
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0051",
+    "CM0077",
+    "CM0079",
+    "CM0081",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "DE-0009.05": {
+   "name": "Corruption or Overload of Ground-Based SDA Systems",
+   "tactic": "Defense Evasion",
+   "parent": "DE-0009",
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0020",
+    "CM0034",
+    "CM0042"
+   ],
+   "indicators": []
+  },
+  "DE-0010": {
+   "name": "Overflow Audit Log",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0032",
+    "CM0034",
+    "CM0042",
+    "CM0056"
+   ],
+   "indicators": [
+    "DISE-14: Unexpected Audit Log Rotation",
+    "DISE-15: High Volume of Audit Log Entries Detected",
+    "DISE-16: Audit Log Capacity Limit Reached",
+    "DISE-1: File or Data Integrity Check Failure",
+    "DISE-4: Storage Exhaustion (Disk Full)",
+    "DISE-6: Suspicious Activity Leading to Storage Exhaustion"
+   ]
+  },
+  "DE-0011": {
+   "name": "Credentialed Evasion",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0029",
+    "CM0030",
+    "CM0035"
+   ],
+   "indicators": []
+  },
+  "DE-0012": {
+   "name": "Component Collusion",
+   "tactic": "Defense Evasion",
+   "parent": null,
+   "countermeasures": [
+    "CM0004"
+   ],
+   "indicators": []
+  },
+  "EX-0001": {
+   "name": "Replay",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0036",
+    "CM0038",
+    "CM0039",
+    "CM0055",
+    "CM0073"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-4: Unexpected Latency in Command Packet Processing",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-28: Detection of CANBus Replay Attack with Duplicate Message ID and Timing Anomalies",
+    "CSNE-29: Replay of Legitimate CANBus Message with Known Message ID",
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "UACE-10:  Logs of Processed Commands Flooding",
+    "UACE-20: Repeated Downlink Commands with Identical Timestamps",
+    "UACE-21: Repeated Downlink Commands Sent Outside Authorized Time",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station",
+    "UACE-7: Duplicate Command Packet Executions",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UACE-9: Valid Command Flooding"
+   ]
+  },
+  "EX-0001.01": {
+   "name": "Command Packets",
+   "tactic": "Execution",
+   "parent": "EX-0001",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0036",
+    "CM0055",
+    "CM0073"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-4: Unexpected Latency in Command Packet Processing",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "UACE-20: Repeated Downlink Commands with Identical Timestamps",
+    "UACE-21: Repeated Downlink Commands Sent Outside Authorized Time",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station",
+    "UACE-7: Duplicate Command Packet Executions",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UACE-9: Valid Command Flooding"
+   ]
+  },
+  "EX-0001.02": {
+   "name": "Bus Traffic Replay",
+   "tactic": "Execution",
+   "parent": "EX-0001",
+   "countermeasures": [
+    "CM0032",
+    "CM0033",
+    "CM0038",
+    "CM0039"
+   ],
+   "indicators": [
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-28: Detection of CANBus Replay Attack with Duplicate Message ID and Timing Anomalies",
+    "CSNE-29: Replay of Legitimate CANBus Message with Known Message ID"
+   ]
+  },
+  "EX-0002": {
+   "name": "Position, Navigation, and Timing (PNT) Geofencing",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0032"
+   ],
+   "indicators": [
+    "CSNE-18: Process Execution Tied to Specific Geographic Coordinates"
+   ]
+  },
+  "EX-0003": {
+   "name": "Modify Authentication Process",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0021",
+    "CM0030",
+    "CM0032",
+    "CM0035"
+   ],
+   "indicators": [
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings"
+   ]
+  },
+  "EX-0004": {
+   "name": "Compromise Boot Memory",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0014",
+    "CM0015",
+    "CM0018",
+    "CM0021",
+    "CM0023",
+    "CM0028"
+   ],
+   "indicators": [
+    "MIRE-10: Anomalous Boot Sequence Execution",
+    "MIRE-11: Detection of Malicious Code in Boot Memory (Integrity Failure)",
+    "MIRE-16: Unexpected Boot Memory Modifications",
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "MIRE-9: Failed Boot Memory Validation",
+    "SIUU-8: Malicious Code via New Process",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software"
+   ]
+  },
+  "EX-0005": {
+   "name": "Exploit Hardware/Firmware Corruption",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0014",
+    "CM0018",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028",
+    "CM0032"
+   ],
+   "indicators": [
+    "GNTM-8: Anomalous Hardware Clock Behavior",
+    "MIRE-10: Anomalous Boot Sequence Execution",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "MIRE-9: Failed Boot Memory Validation",
+    "SIUU-1: Unexpected Hardware Interrupt Trigger",
+    "SIUU-22: Abnormal Subsystem Behavior Following Malicious Code Execution",
+    "SIUU-23: Detection of Unauthorized Hardware Debugging",
+    "SIUU-24: Suspicious Firmware Version Rollback",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-3: Security Feature Bypass Detected in Hardware Design",
+    "SIUU-8: Malicious Code via New Process",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges",
+    "UACE-1: Hardware Command Executed Outside Authorized Schedule",
+    "UACE-2: Unauthorized Hardware Command-Induced Configuration Change"
+   ]
+  },
+  "EX-0005.01": {
+   "name": "Design Flaws",
+   "tactic": "Execution",
+   "parent": "EX-0005",
+   "countermeasures": [
+    "CM0014",
+    "CM0018",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028",
+    "CM0032"
+   ],
+   "indicators": [
+    "MIRE-10: Anomalous Boot Sequence Execution",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "MIRE-9: Failed Boot Memory Validation",
+    "SIUU-1: Unexpected Hardware Interrupt Trigger",
+    "SIUU-23: Detection of Unauthorized Hardware Debugging",
+    "SIUU-24: Suspicious Firmware Version Rollback",
+    "SIUU-3: Security Feature Bypass Detected in Hardware Design"
+   ]
+  },
+  "EX-0005.02": {
+   "name": "Malicious Use of Hardware Commands",
+   "tactic": "Execution",
+   "parent": "EX-0005",
+   "countermeasures": [
+    "CM0032",
+    "CM0043"
+   ],
+   "indicators": [
+    "UACE-1: Hardware Command Executed Outside Authorized Schedule",
+    "UACE-2: Unauthorized Hardware Command-Induced Configuration Change"
+   ]
+  },
+  "EX-0006": {
+   "name": "Disable/Bypass Encryption",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0031",
+    "CM0032",
+    "CM0042",
+    "CM0043"
+   ],
+   "indicators": [
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table"
+   ]
+  },
+  "EX-0007": {
+   "name": "Trigger Single Event Upset",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0032",
+    "CM0044",
+    "CM0045",
+    "CM0085"
+   ],
+   "indicators": [
+    "DISE-3: Multiple Failed Attempts to Access Encrypted Data",
+    "MIRE-18: Bit Flip in Critical Memory Region Detected via Error Detection",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-5: Memory Corruption Detected in Flight Software",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "SMSR-12: Microwave Emissions Targeting Sensitive Nodes",
+    "SMSR-13: High Energy Particle Strike on Sensitive Node"
+   ]
+  },
+  "EX-0008": {
+   "name": "Time Synchronized Execution",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0015",
+    "CM0018",
+    "CM0019",
+    "CM0032",
+    "CM0042",
+    "CM0046"
+   ],
+   "indicators": [
+    "GNTM-6: Unexpected Time Delta Detected",
+    "MIRE-13: Unexpected Modification to Stored Commands Area",
+    "SIUU-2: Unexpected System Integrity Failures in Software"
+   ]
+  },
+  "EX-0008.01": {
+   "name": "Absolute Time Sequences",
+   "tactic": "Execution",
+   "parent": "EX-0008",
+   "countermeasures": [
+    "CM0015",
+    "CM0018",
+    "CM0019",
+    "CM0032",
+    "CM0042",
+    "CM0046"
+   ],
+   "indicators": [
+    "GNTM-6: Unexpected Time Delta Detected",
+    "MIRE-13: Unexpected Modification to Stored Commands Area",
+    "SIUU-2: Unexpected System Integrity Failures in Software"
+   ]
+  },
+  "EX-0008.02": {
+   "name": "Relative Time Sequences",
+   "tactic": "Execution",
+   "parent": "EX-0008",
+   "countermeasures": [
+    "CM0015",
+    "CM0018",
+    "CM0019",
+    "CM0032",
+    "CM0042",
+    "CM0046"
+   ],
+   "indicators": [
+    "GNTM-6: Unexpected Time Delta Detected",
+    "MIRE-13: Unexpected Modification to Stored Commands Area",
+    "SIUU-2: Unexpected System Integrity Failures in Software"
+   ]
+  },
+  "EX-0009": {
+   "name": "Exploit Code Flaws",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0008",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0025",
+    "CM0026",
+    "CM0032",
+    "CM0039",
+    "CM0040",
+    "CM0042",
+    "CM0044",
+    "CM0047"
+   ],
+   "indicators": [
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "MIRE-5: Memory Corruption Detected in Flight Software",
+    "SIUU-17: Detection of Anomalous API Calls in Flight Software",
+    "SIUU-20: Suspicious Access to Vulnerable Software Process",
+    "SIUU-21: Detection of Anomalous Process Behavior Due to Code Exploitation",
+    "SIUU-22: Abnormal Subsystem Behavior Following Malicious Code Execution",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SIUU-8: Malicious Code via New Process",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "SMSR-14: Multiple Failed System Reinitializations Due to Exploit",
+    "SMSR-16: Unexpected Fault Management Process Termination",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges",
+    "SMSR-6: Unauthorized Fault Management Configuration Change Detected Outside Expected Time",
+    "UACE-11: Unauthorized Command Execution via Flight Software",
+    "UCEB-5: Unexpected SPI Value Triggering Segmentation Fault",
+    "UCEB-6: Abnormal Security Association (SA) Pointer Retrieval",
+    "WTRE-5: Unauthorized Access Attempt to Critical Registers",
+    "WTRE-6: Unexpected Register Reset Activity"
+   ]
+  },
+  "EX-0009.01": {
+   "name": "Flight Software",
+   "tactic": "Execution",
+   "parent": "EX-0009",
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0032",
+    "CM0042",
+    "CM0044"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-14: Unexpected Audit Log Rotation",
+    "DISE-15: High Volume of Audit Log Entries Detected",
+    "DISE-16: Audit Log Capacity Limit Reached",
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-5: Memory Corruption Detected in Flight Software",
+    "SIUU-17: Detection of Anomalous API Calls in Flight Software",
+    "SIUU-21: Detection of Anomalous Process Behavior Due to Code Exploitation",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "SMSR-14: Multiple Failed System Reinitializations Due to Exploit",
+    "SMSR-16: Unexpected Fault Management Process Termination",
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "SMSR-6: Unauthorized Fault Management Configuration Change Detected Outside Expected Time",
+    "UACE-11: Unauthorized Command Execution via Flight Software",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UACE-4: Unexpected Legitimate Command Sent",
+    "UCEB-5: Unexpected SPI Value Triggering Segmentation Fault",
+    "UCEB-6: Abnormal Security Association (SA) Pointer Retrieval",
+    "WTRE-5: Unauthorized Access Attempt to Critical Registers",
+    "WTRE-6: Unexpected Register Reset Activity"
+   ]
+  },
+  "EX-0009.02": {
+   "name": "Operating System",
+   "tactic": "Execution",
+   "parent": "EX-0009",
+   "countermeasures": [
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0015",
+    "CM0016",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0025",
+    "CM0026",
+    "CM0032",
+    "CM0039",
+    "CM0040",
+    "CM0042",
+    "CM0044",
+    "CM0047"
+   ],
+   "indicators": [
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-21: Detection of Anomalous Process Behavior Due to Code Exploitation",
+    "SIUU-22: Abnormal Subsystem Behavior Following Malicious Code Execution",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "SIUU-8: Malicious Code via New Process",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "SMSR-14: Multiple Failed System Reinitializations Due to Exploit"
+   ]
+  },
+  "EX-0009.03": {
+   "name": "Known Vulnerability (COTS/FOSS)",
+   "tactic": "Execution",
+   "parent": "EX-0009",
+   "countermeasures": [
+    "CM0008",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0032",
+    "CM0039",
+    "CM0044"
+   ],
+   "indicators": [
+    "SIUU-20: Suspicious Access to Vulnerable Software Process",
+    "SMSR-14: Multiple Failed System Reinitializations Due to Exploit"
+   ]
+  },
+  "EX-0010": {
+   "name": "Malicious Code",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0069"
+   ],
+   "indicators": [
+    "CSNE-17: Creation of FIFO for Data Exfiltration or Command Injection",
+    "CSNE-30: Unauthorized Device Acting as Bus Controller (1553)",
+    "DISE-14: Unexpected Audit Log Rotation",
+    "DISE-15: High Volume of Audit Log Entries Detected",
+    "DISE-16: Audit Log Capacity Limit Reached",
+    "DISE-1: File or Data Integrity Check Failure",
+    "DISE-3: Multiple Failed Attempts to Access Encrypted Data",
+    "DISE-4: Storage Exhaustion (Disk Full)",
+    "DISE-5: Unusual File Encryption Activity Detected",
+    "DISE-6: Suspicious Activity Leading to Storage Exhaustion",
+    "MIRE-13: Unexpected Modification to Stored Commands Area",
+    "MIRE-14: Abnormal Memory Consumption by Malicious Process",
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "SIUU-10: Process Executing Priority Modification",
+    "SIUU-11: Suspicious Binary or Script Execution",
+    "SIUU-12: Loading of Malicious Kernel Modules",
+    "SIUU-13: Repeated File Access to /null and Other Dummy Files",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-15: Repeated File Access to /zero or /null Devices",
+    "SIUU-16: Execution of System Commands",
+    "SIUU-17: Detection of Anomalous API Calls in Flight Software",
+    "SIUU-20: Suspicious Access to Vulnerable Software Process",
+    "SIUU-21: Detection of Anomalous Process Behavior Due to Code Exploitation",
+    "SIUU-22: Abnormal Subsystem Behavior Following Malicious Code Execution",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SIUU-8: Malicious Code via New Process",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "SMSR-10: Ransomware Holding CPU Cycles Hostage",
+    "SMSR-11: High CPU Usage Detected for Unauthorized Process",
+    "SMSR-14: Multiple Failed System Reinitializations Due to Exploit",
+    "SMSR-16: Unexpected Fault Management Process Termination",
+    "SMSR-17: Telemetry Packet Drops Due to CPU or Memory Overload",
+    "SMSR-18: Abnormal Process Forking Leading to Resource Exhaustion",
+    "SMSR-19: System Freeze or Crash Detected After High Resource Consumption (CPU, Memory, Storage)",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges",
+    "SMSR-2: High CPU Utilization Due to Anomalous/Malicious Activity",
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "SMSR-6: Unauthorized Fault Management Configuration Change Detected Outside Expected Time",
+    "UACE-10:  Logs of Processed Commands Flooding",
+    "UACE-11: Unauthorized Command Execution via Flight Software",
+    "WTRE-5: Unauthorized Access Attempt to Critical Registers",
+    "WTRE-6: Unexpected Register Reset Activity",
+    "WTRE-7: Anomalous Register Value Modification"
+   ]
+  },
+  "EX-0010.01": {
+   "name": "Ransomware",
+   "tactic": "Execution",
+   "parent": "EX-0010",
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0056",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-3: Multiple Failed Attempts to Access Encrypted Data",
+    "DISE-5: Unusual File Encryption Activity Detected",
+    "SIUU-11: Suspicious Binary or Script Execution",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SMSR-10: Ransomware Holding CPU Cycles Hostage"
+   ]
+  },
+  "EX-0010.02": {
+   "name": "Wiper Malware",
+   "tactic": "Execution",
+   "parent": "EX-0010",
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0056",
+    "CM0069"
+   ],
+   "indicators": [
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "SIUU-11: Suspicious Binary or Script Execution",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SMSR-14: Multiple Failed System Reinitializations Due to Exploit"
+   ]
+  },
+  "EX-0010.03": {
+   "name": "Rootkit",
+   "tactic": "Execution",
+   "parent": "EX-0010",
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0069"
+   ],
+   "indicators": [
+    "CSNE-17: Creation of FIFO for Data Exfiltration or Command Injection",
+    "DISE-1: File or Data Integrity Check Failure",
+    "DISE-4: Storage Exhaustion (Disk Full)",
+    "DISE-6: Suspicious Activity Leading to Storage Exhaustion",
+    "MIRE-13: Unexpected Modification to Stored Commands Area",
+    "MIRE-14: Abnormal Memory Consumption by Malicious Process",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "SIUU-10: Process Executing Priority Modification",
+    "SIUU-11: Suspicious Binary or Script Execution",
+    "SIUU-12: Loading of Malicious Kernel Modules",
+    "SIUU-13: Repeated File Access to /null and Other Dummy Files",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-15: Repeated File Access to /zero or /null Devices",
+    "SIUU-16: Execution of System Commands",
+    "SIUU-21: Detection of Anomalous Process Behavior Due to Code Exploitation",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "SMSR-11: High CPU Usage Detected for Unauthorized Process",
+    "SMSR-17: Telemetry Packet Drops Due to CPU or Memory Overload",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges",
+    "WTRE-5: Unauthorized Access Attempt to Critical Registers",
+    "WTRE-6: Unexpected Register Reset Activity",
+    "WTRE-7: Anomalous Register Value Modification"
+   ]
+  },
+  "EX-0010.04": {
+   "name": "Bootkit",
+   "tactic": "Execution",
+   "parent": "EX-0010",
+   "countermeasures": [
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0047",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-1: File or Data Integrity Check Failure",
+    "MIRE-10: Anomalous Boot Sequence Execution",
+    "MIRE-11: Detection of Malicious Code in Boot Memory (Integrity Failure)",
+    "MIRE-16: Unexpected Boot Memory Modifications",
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "MIRE-9: Failed Boot Memory Validation",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "WTRE-5: Unauthorized Access Attempt to Critical Registers",
+    "WTRE-6: Unexpected Register Reset Activity",
+    "WTRE-7: Anomalous Register Value Modification"
+   ]
+  },
+  "EX-0011": {
+   "name": "Exploit Reduced Protections During Safe-Mode",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0006",
+    "CM0022",
+    "CM0029",
+    "CM0032",
+    "CM0035",
+    "CM0042",
+    "CM0044",
+    "CM0082"
+   ],
+   "indicators": [
+    "ARFS-8: Unauthorized Frequency Usage on Backup Channel",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "SMSR-9: Security Feature Disabled in Safe-Mode",
+    "UACE-12: Anomalous Command or Sequence in Safe-Mode",
+    "UACE-13: Unexpected Command Execution During Safe-Mode",
+    "UACE-14: Safe-Mode Exit Command Executed at Unexpected Time",
+    "UACE-15: Command from Untrusted Ground Station or Location in Safe-Mode"
+   ]
+  },
+  "EX-0012": {
+   "name": "Modify On-Board Values",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0048",
+    "CM0049",
+    "CM0056",
+    "CM0066",
+    "CM0069"
+   ],
+   "indicators": [
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "DISE-10: Abnormal Data Flow in Attitude Control Telemetry",
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "DISE-3: Multiple Failed Attempts to Access Encrypted Data",
+    "DISE-5: Unusual File Encryption Activity Detected",
+    "DISE-7: Attitude Sensor Data and Actuator Behavior",
+    "DISE-9: Unexpected Change in Gyroscope Sensor Data",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "SMSR-16: Unexpected Fault Management Process Termination",
+    "SMSR-4: ADCS Onboard Values Manipulation",
+    "SMSR-5: Unexpected Spacecraft Telemetry or Movement Detected on Attitude",
+    "SMSR-6: Unauthorized Fault Management Configuration Change Detected Outside Expected Time",
+    "SMSR-7: Unauthorized Star Map Changes in Star Trackers",
+    "SMSR-8: Sudden Orbit Correction Detected Outside of Planned Windows",
+    "UACE-16: Irregular Orbit Maneuver Commands Detected on Attitude Control",
+    "UACE-17: Abnormal Burn Duration Detected in Propulsion Subsystem",
+    "UACE-18: Suspicious Burn Sequence Executed Outside Planned Timeline",
+    "UACE-19: Unexpected Thrust Direction Detected in Propulsion Subsystem",
+    "UACE-22: Multiple Consecutive Burn Commands Exceeding Duration Limits",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0012.01": {
+   "name": "Registers",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "MIRE-18: Bit Flip in Critical Memory Region Detected via Error Detection",
+    "WTRE-5: Unauthorized Access Attempt to Critical Registers",
+    "WTRE-6: Unexpected Register Reset Activity",
+    "WTRE-7: Anomalous Register Value Modification"
+   ]
+  },
+  "EX-0012.02": {
+   "name": "Internal Routing Tables",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "EX-0012.03": {
+   "name": "Memory Write/Loads",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-5: Memory Corruption Detected in Flight Software",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges"
+   ]
+  },
+  "EX-0012.04": {
+   "name": "App/Subscriber Tables",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-1: File or Data Integrity Check Failure",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0012.05": {
+   "name": "Scheduling Algorithm",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-1: File or Data Integrity Check Failure"
+   ]
+  },
+  "EX-0012.06": {
+   "name": "Science/Payload Data",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption",
+    "DISE-1: File or Data Integrity Check Failure",
+    "DISE-3: Multiple Failed Attempts to Access Encrypted Data",
+    "DISE-5: Unusual File Encryption Activity Detected",
+    "MIRE-15: Unexpected Modification of Memory Location Associated with Payload Data",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions"
+   ]
+  },
+  "EX-0012.07": {
+   "name": "Propulsion Subsystem",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "SMSR-8: Sudden Orbit Correction Detected Outside of Planned Windows",
+    "UACE-17: Abnormal Burn Duration Detected in Propulsion Subsystem",
+    "UACE-18: Suspicious Burn Sequence Executed Outside Planned Timeline",
+    "UACE-19: Unexpected Thrust Direction Detected in Propulsion Subsystem",
+    "UACE-22: Multiple Consecutive Burn Commands Exceeding Duration Limits",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0012.08": {
+   "name": "Attitude Determination & Control Subsystem",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0066",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-10: Abnormal Data Flow in Attitude Control Telemetry",
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-7: Attitude Sensor Data and Actuator Behavior",
+    "DISE-9: Unexpected Change in Gyroscope Sensor Data",
+    "SMSR-4: ADCS Onboard Values Manipulation",
+    "SMSR-5: Unexpected Spacecraft Telemetry or Movement Detected on Attitude",
+    "SMSR-7: Unauthorized Star Map Changes in Star Trackers",
+    "SMSR-8: Sudden Orbit Correction Detected Outside of Planned Windows",
+    "UACE-16: Irregular Orbit Maneuver Commands Detected on Attitude Control",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0012.09": {
+   "name": "Electrical Power Subsystem",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0012.10": {
+   "name": "Command & Data Handling Subsystem",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0012.11": {
+   "name": "Watchdog Timer (WDT)",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0069"
+   ],
+   "indicators": []
+  },
+  "EX-0012.12": {
+   "name": "System Clock",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0048",
+    "CM0069"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values",
+    "GNTM-6: Unexpected Time Delta Detected",
+    "GNTM-7: Time Adjustment Commands Detected",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code"
+   ]
+  },
+  "EX-0012.13": {
+   "name": "Poison AI/ML Training Data",
+   "tactic": "Execution",
+   "parent": "EX-0012",
+   "countermeasures": [
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0042",
+    "CM0044",
+    "CM0049",
+    "CM0056",
+    "CM0069"
+   ],
+   "indicators": []
+  },
+  "EX-0013": {
+   "name": "Flooding",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0029",
+    "CM0032",
+    "CM0034",
+    "CM0036",
+    "CM0042",
+    "CM0044",
+    "CM0068",
+    "CM0070",
+    "CM0083"
+   ],
+   "indicators": [
+    "ARFS-6: Abnormal Signal Strength",
+    "CSNE-12: Generic Flooding Attack",
+    "CSNE-13: Erroneous Input Flooding",
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "CSNE-8: Denial of Service Due to Saturated Bandwidth Detected",
+    "DISE-14: Unexpected Audit Log Rotation",
+    "DISE-15: High Volume of Audit Log Entries Detected",
+    "DISE-16: Audit Log Capacity Limit Reached",
+    "MIRE-8: Resource Exhaustion Due to Handling Invalid Inputs",
+    "SMSR-2: High CPU Utilization Due to Anomalous/Malicious Activity",
+    "UACE-10:  Logs of Processed Commands Flooding",
+    "UACE-5: Unexpected counter increment (valid or invalid count)"
+   ]
+  },
+  "EX-0013.01": {
+   "name": "Valid Commands",
+   "tactic": "Execution",
+   "parent": "EX-0013",
+   "countermeasures": [
+    "CM0029",
+    "CM0032",
+    "CM0034",
+    "CM0036",
+    "CM0042",
+    "CM0044",
+    "CM0068",
+    "CM0070",
+    "CM0083"
+   ],
+   "indicators": [
+    "DISE-14: Unexpected Audit Log Rotation",
+    "DISE-15: High Volume of Audit Log Entries Detected",
+    "DISE-16: Audit Log Capacity Limit Reached",
+    "UACE-10:  Logs of Processed Commands Flooding"
+   ]
+  },
+  "EX-0013.02": {
+   "name": "Erroneous Input",
+   "tactic": "Execution",
+   "parent": "EX-0013",
+   "countermeasures": [
+    "CM0029",
+    "CM0032",
+    "CM0034",
+    "CM0036",
+    "CM0042",
+    "CM0044",
+    "CM0068",
+    "CM0070",
+    "CM0083"
+   ],
+   "indicators": [
+    "ARFS-6: Abnormal Signal Strength",
+    "CSNE-12: Generic Flooding Attack",
+    "CSNE-13: Erroneous Input Flooding",
+    "CSNE-8: Denial of Service Due to Saturated Bandwidth Detected",
+    "DISE-14: Unexpected Audit Log Rotation",
+    "DISE-15: High Volume of Audit Log Entries Detected",
+    "DISE-16: Audit Log Capacity Limit Reached",
+    "MIRE-8: Resource Exhaustion Due to Handling Invalid Inputs",
+    "UACE-5: Unexpected counter increment (valid or invalid count)"
+   ]
+  },
+  "EX-0014": {
+   "name": "Spoofing",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0029",
+    "CM0031",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0048",
+    "CM0050"
+   ],
+   "indicators": [
+    "ARFS-3: Invalid RF Command Lock",
+    "CSNE-14: Unusual Data Transmission Between SpaceWire Routing Switches",
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems",
+    "CSNE-34: Unusual Data Transmission from Remote Terminal to Subsystem. (1553)",
+    "DISE-10: Abnormal Data Flow in Attitude Control Telemetry",
+    "DISE-9: Unexpected Change in Gyroscope Sensor Data",
+    "GNTM-10: Anomalous Sensor Data (Time Rewind Detected)",
+    "GNTM-11: Unexpected Position Delta Detected via Anomalous GNSS Position Data",
+    "GNTM-12: ICD Field Non-Compliance Detected",
+    "GNTM-1: Unexpected GNSS Signal Delay",
+    "GNTM-5: Time Discrepancy Detected in GPS/External Signal Input",
+    "GNTM-9: Anomalous GNSS Timing Behavior (Time Rewind Detected)",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges",
+    "UACE-23: Unusual Commands from Subsystem Acting as Bus Controller (1553)",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0014.01": {
+   "name": "Time Spoof",
+   "tactic": "Execution",
+   "parent": "EX-0014",
+   "countermeasures": [
+    "CM0031",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0048"
+   ],
+   "indicators": [
+    "GNTM-10: Anomalous Sensor Data (Time Rewind Detected)",
+    "GNTM-5: Time Discrepancy Detected in GPS/External Signal Input",
+    "GNTM-6: Unexpected Time Delta Detected",
+    "GNTM-7: Time Adjustment Commands Detected",
+    "GNTM-9: Anomalous GNSS Timing Behavior (Time Rewind Detected)",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-7: Unexpected Memory Value Write or Modification"
+   ]
+  },
+  "EX-0014.02": {
+   "name": "Bus Traffic Spoofing",
+   "tactic": "Execution",
+   "parent": "EX-0014",
+   "countermeasures": [
+    "CM0031",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0050",
+    "CM0067"
+   ],
+   "indicators": [
+    "CSNE-14: Unusual Data Transmission Between SpaceWire Routing Switches",
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-28: Detection of CANBus Replay Attack with Duplicate Message ID and Timing Anomalies",
+    "CSNE-29: Replay of Legitimate CANBus Message with Known Message ID",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems",
+    "CSNE-34: Unusual Data Transmission from Remote Terminal to Subsystem. (1553)",
+    "DISE-10: Abnormal Data Flow in Attitude Control Telemetry",
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "UACE-23: Unusual Commands from Subsystem Acting as Bus Controller (1553)",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0014.03": {
+   "name": "Sensor Data",
+   "tactic": "Execution",
+   "parent": "EX-0014",
+   "countermeasures": [
+    "CM0031",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0050",
+    "CM0066"
+   ],
+   "indicators": [
+    "CSNE-14: Unusual Data Transmission Between SpaceWire Routing Switches",
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems",
+    "CSNE-34: Unusual Data Transmission from Remote Terminal to Subsystem. (1553)",
+    "DISE-10: Abnormal Data Flow in Attitude Control Telemetry",
+    "DISE-11: Sensor Data Spike Detected",
+    "DISE-12: Discrepancy Between Redundant Sensor Systems",
+    "DISE-8: Anomalous Frequency of Sensor Data Updates",
+    "DISE-9: Unexpected Change in Gyroscope Sensor Data",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges",
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "UACE-23: Unusual Commands from Subsystem Acting as Bus Controller (1553)",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems"
+   ]
+  },
+  "EX-0014.04": {
+   "name": "Position, Navigation, and Timing (PNT) Spoofing",
+   "tactic": "Execution",
+   "parent": "EX-0014",
+   "countermeasures": [
+    "CM0031",
+    "CM0032",
+    "CM0042",
+    "CM0044",
+    "CM0048",
+    "CM0083"
+   ],
+   "indicators": [
+    "GNTM-10: Anomalous Sensor Data (Time Rewind Detected)",
+    "GNTM-11: Unexpected Position Delta Detected via Anomalous GNSS Position Data",
+    "GNTM-12: ICD Field Non-Compliance Detected",
+    "GNTM-1: Unexpected GNSS Signal Delay",
+    "GNTM-5: Time Discrepancy Detected in GPS/External Signal Input",
+    "GNTM-9: Anomalous GNSS Timing Behavior (Time Rewind Detected)"
+   ]
+  },
+  "EX-0014.05": {
+   "name": "Ballistic Missile Spoof",
+   "tactic": "Execution",
+   "parent": "EX-0014",
+   "countermeasures": [
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "EX-0015": {
+   "name": "Side-Channel Attack",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0032",
+    "CM0044",
+    "CM0051"
+   ],
+   "indicators": []
+  },
+  "EX-0016": {
+   "name": "Jamming",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0009",
+    "CM0029",
+    "CM0074",
+    "CM0075",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084"
+   ],
+   "indicators": [
+    "ARFS-3: Invalid RF Command Lock",
+    "ARFS-6: Abnormal Signal Strength",
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "CSNE-8: Denial of Service Due to Saturated Bandwidth Detected",
+    "CSNE-9: Unexpected Downlink Traffic Dropped or Disrupted",
+    "GNTM-1: Unexpected GNSS Signal Delay",
+    "GNTM-2: Signal-to-Noise Ratio Drop in GNSS Receiver",
+    "GNTM-3: GNSS Signal Outage Detected",
+    "GNTM-4: GNSS Receiver Power Fluctuations"
+   ]
+  },
+  "EX-0016.01": {
+   "name": "Uplink Jamming",
+   "tactic": "Execution",
+   "parent": "EX-0016",
+   "countermeasures": [
+    "CM0009",
+    "CM0029",
+    "CM0074",
+    "CM0075",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084"
+   ],
+   "indicators": [
+    "ARFS-3: Invalid RF Command Lock",
+    "ARFS-6: Abnormal Signal Strength",
+    "CSNE-8: Denial of Service Due to Saturated Bandwidth Detected"
+   ]
+  },
+  "EX-0016.02": {
+   "name": "Downlink Jamming",
+   "tactic": "Execution",
+   "parent": "EX-0016",
+   "countermeasures": [
+    "CM0009",
+    "CM0029",
+    "CM0074",
+    "CM0075",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084"
+   ],
+   "indicators": [
+    "ARFS-3: Invalid RF Command Lock",
+    "ARFS-6: Abnormal Signal Strength",
+    "CSNE-41: High Latency Detected in Downlink Communication",
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "CSNE-8: Denial of Service Due to Saturated Bandwidth Detected",
+    "CSNE-9: Unexpected Downlink Traffic Dropped or Disrupted"
+   ]
+  },
+  "EX-0016.03": {
+   "name": "Position, Navigation, and Timing (PNT) Jamming",
+   "tactic": "Execution",
+   "parent": "EX-0016",
+   "countermeasures": [
+    "CM0009",
+    "CM0029",
+    "CM0032",
+    "CM0034",
+    "CM0036",
+    "CM0042",
+    "CM0044",
+    "CM0048",
+    "CM0068",
+    "CM0070",
+    "CM0083"
+   ],
+   "indicators": [
+    "ARFS-3: Invalid RF Command Lock",
+    "CSNE-8: Denial of Service Due to Saturated Bandwidth Detected",
+    "GNTM-1: Unexpected GNSS Signal Delay",
+    "GNTM-2: Signal-to-Noise Ratio Drop in GNSS Receiver",
+    "GNTM-3: GNSS Signal Outage Detected",
+    "GNTM-4: GNSS Receiver Power Fluctuations"
+   ]
+  },
+  "EX-0017": {
+   "name": "Kinetic Physical Attack",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0076",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084",
+    "CM0085",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "EX-0017.01": {
+   "name": "Direct Ascent ASAT",
+   "tactic": "Execution",
+   "parent": "EX-0017",
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0076",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082"
+   ],
+   "indicators": []
+  },
+  "EX-0017.02": {
+   "name": "Co-Orbital ASAT",
+   "tactic": "Execution",
+   "parent": "EX-0017",
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0076",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084",
+    "CM0085",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "EX-0018": {
+   "name": "Non-Kinetic Physical Attack",
+   "tactic": "Execution",
+   "parent": null,
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0082",
+    "CM0085",
+    "CM0086"
+   ],
+   "indicators": [
+    "MIRE-18: Bit Flip in Critical Memory Region Detected via Error Detection",
+    "SMSR-12: Microwave Emissions Targeting Sensitive Nodes",
+    "SMSR-13: High Energy Particle Strike on Sensitive Node"
+   ]
+  },
+  "EX-0018.01": {
+   "name": "Electromagnetic Pulse (EMP)",
+   "tactic": "Execution",
+   "parent": "EX-0018",
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0077",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0085"
+   ],
+   "indicators": []
+  },
+  "EX-0018.02": {
+   "name": "High-Powered Laser",
+   "tactic": "Execution",
+   "parent": "EX-0018",
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0082",
+    "CM0085",
+    "CM0086"
+   ],
+   "indicators": []
+  },
+  "EX-0018.03": {
+   "name": "High-Powered Microwave",
+   "tactic": "Execution",
+   "parent": "EX-0018",
+   "countermeasures": [
+    "CM0009",
+    "CM0074",
+    "CM0075",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0082",
+    "CM0085",
+    "CM0086"
+   ],
+   "indicators": [
+    "SMSR-12: Microwave Emissions Targeting Sensitive Nodes"
+   ]
+  },
+  "EXF-0001": {
+   "name": "Replay",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0036",
+    "CM0055"
+   ],
+   "indicators": [
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "UACE-20: Repeated Downlink Commands with Identical Timestamps",
+    "UACE-21: Repeated Downlink Commands Sent Outside Authorized Time",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station"
+   ]
+  },
+  "EXF-0002": {
+   "name": "Side-Channel Exfiltration",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0050",
+    "CM0057",
+    "CM0058",
+    "CM0059",
+    "CM0060",
+    "CM0061",
+    "CM0062",
+    "CM0063",
+    "CM0064",
+    "CM0071",
+    "CM0073"
+   ],
+   "indicators": []
+  },
+  "EXF-0002.01": {
+   "name": "Power Analysis Attacks",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0002",
+   "countermeasures": [
+    "CM0057",
+    "CM0058",
+    "CM0059"
+   ],
+   "indicators": []
+  },
+  "EXF-0002.02": {
+   "name": "Electromagnetic Leakage Attacks",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0002",
+   "countermeasures": [
+    "CM0003",
+    "CM0050",
+    "CM0060",
+    "CM0061"
+   ],
+   "indicators": []
+  },
+  "EXF-0002.03": {
+   "name": "Traffic Analysis Attacks",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0002",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0050",
+    "CM0062",
+    "CM0071",
+    "CM0073"
+   ],
+   "indicators": []
+  },
+  "EXF-0002.04": {
+   "name": "Timing Attacks",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0002",
+   "countermeasures": [
+    "CM0002",
+    "CM0063"
+   ],
+   "indicators": []
+  },
+  "EXF-0002.05": {
+   "name": "Thermal Imaging attacks",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0002",
+   "countermeasures": [
+    "CM0064"
+   ],
+   "indicators": []
+  },
+  "EXF-0003": {
+   "name": "Signal Interception",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0036",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": [
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption"
+   ]
+  },
+  "EXF-0003.01": {
+   "name": "Uplink Exfiltration",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0003",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0036",
+    "CM0050",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": [
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption"
+   ]
+  },
+  "EXF-0003.02": {
+   "name": "Downlink Exfiltration",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0003",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0036",
+    "CM0050",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": [
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-41: High Latency Detected in Downlink Communication",
+    "CSNE-42: Multiple Failed Downlink Attempts from Spacecraft",
+    "MIRE-6: Unexpected Modification of Memory Location Associated with Telemetry Data",
+    "SIUU-25: Unauthorized Function Hooking in Telemetry Process"
+   ]
+  },
+  "EXF-0004": {
+   "name": "Out-of-Band Communications Link",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0036",
+    "CM0071",
+    "CM0073"
+   ],
+   "indicators": [
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-22: Traffic Volume Spike on Out-of-Band Link",
+    "CSNE-37: Out-of-Band Activity Outside Scheduled Time Windows",
+    "CSNE-38: Use of Unexpected Protocol on Out-of-Band Link",
+    "CSNE-39: Unauthorized Frequency Usage on Out-of-Band Link"
+   ]
+  },
+  "EXF-0005": {
+   "name": "Proximity Operations",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0073",
+    "CM0085"
+   ],
+   "indicators": []
+  },
+  "EXF-0006": {
+   "name": "Modify Communications Configuration",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0021",
+    "CM0023",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028"
+   ],
+   "indicators": [
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-20: Unauthorized Downlink Communication at Unexpected Time",
+    "DISE-1: File or Data Integrity Check Failure",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "EXF-0006.01": {
+   "name": "Software Defined Radio",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0006",
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0021",
+    "CM0023",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028"
+   ],
+   "indicators": [
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-20: Unauthorized Downlink Communication at Unexpected Time",
+    "DISE-1: File or Data Integrity Check Failure",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SMSR-15: Unexpected Changes to Software-Defined Radio (SDR) Configuration",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "EXF-0006.02": {
+   "name": "Transponder",
+   "tactic": "Exfiltration",
+   "parent": "EXF-0006",
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0021",
+    "CM0023",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028"
+   ],
+   "indicators": [
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-20: Unauthorized Downlink Communication at Unexpected Time",
+    "DISE-1: File or Data Integrity Check Failure",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "SIUU-26: Unauthorized Modification of Downlink Configuration",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "EXF-0007": {
+   "name": "Compromised Ground System",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0030",
+    "CM0035",
+    "CM0053"
+   ],
+   "indicators": [
+    "ARFS-10: CLTU BIND Authentication Failure",
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-1: Unexpected Ground Station IP Address in Communication",
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "CSNE-24: ARP Spoofing via MAC Address Mismatch",
+    "CSNE-2: ARP Spoofing Attack (Rogue IP)",
+    "DISE-13: Flight Software Configuration Anomalies",
+    "UACE-24: Unauthorized CLTU-START, STOP, or UNBIND Initiation from Unauthorized User or Rogue IP",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UACE-4: Unexpected Legitimate Command Sent",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-9: Failed Credential Encryption in SLE Protocol"
+   ]
+  },
+  "EXF-0008": {
+   "name": "Compromised Developer Site",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0005",
+    "CM0030",
+    "CM0035",
+    "CM0053"
+   ],
+   "indicators": [
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "SIUU-18: Suspicious Activity in Software Compilation or Build Process",
+    "SIUU-19: Unauthorized Modification of Source Code in Software Repository",
+    "SIUU-4: Abnormal Software Update Activity Detected"
+   ]
+  },
+  "EXF-0009": {
+   "name": "Compromised Partner Site",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0038",
+    "CM0039",
+    "CM0052"
+   ],
+   "indicators": [
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System"
+   ]
+  },
+  "EXF-0010": {
+   "name": "Payload Communication Channel",
+   "tactic": "Exfiltration",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0036",
+    "CM0038",
+    "CM0039"
+   ],
+   "indicators": [
+    "ARFS-1: Authentication Process Tampering",
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption",
+    "CSNE-35: Traffic Volume Spike on Payload Channel",
+    "CSNE-36: Payload Channel Activity Outside Scheduled Time Windows",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "UCEB-3: Unexpected Access to Cryptographic Keys",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms",
+    "UCEB-8: Payload Channel Operating Without Encryption"
+   ]
+  },
+  "IA-0001": {
+   "name": "Compromise Supply Chain",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0007",
+    "CM0009",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0013",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0022",
+    "CM0023",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028"
+   ],
+   "indicators": [
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-18: Suspicious Activity in Software Compilation or Build Process",
+    "SIUU-19: Unauthorized Modification of Source Code in Software Repository",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SIUU-6: Compromised Software Certificates or Digital Signatures",
+    "SIUU-7: Invalid Digital Signature in On-Orbit Update Package"
+   ]
+  },
+  "IA-0001.01": {
+   "name": "Software Dependencies & Development Tools",
+   "tactic": "Initial Access",
+   "parent": "IA-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0013"
+   ],
+   "indicators": [
+    "SIUU-18: Suspicious Activity in Software Compilation or Build Process",
+    "SIUU-19: Unauthorized Modification of Source Code in Software Repository",
+    "SIUU-6: Compromised Software Certificates or Digital Signatures"
+   ]
+  },
+  "IA-0001.02": {
+   "name": "Software Supply Chain",
+   "tactic": "Initial Access",
+   "parent": "IA-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0007",
+    "CM0009",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0013",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0022",
+    "CM0023"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-1: File or Data Integrity Check Failure",
+    "DISE-2: Unauthorized Modification of On-Orbit Update Binary",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-18: Suspicious Activity in Software Compilation or Build Process",
+    "SIUU-19: Unauthorized Modification of Source Code in Software Repository",
+    "SIUU-24: Suspicious Firmware Version Rollback",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SIUU-6: Compromised Software Certificates or Digital Signatures",
+    "SIUU-7: Invalid Digital Signature in On-Orbit Update Package",
+    "SIUU-8: Malicious Code via New Process"
+   ]
+  },
+  "IA-0001.03": {
+   "name": "Hardware Supply Chain",
+   "tactic": "Initial Access",
+   "parent": "IA-0001",
+   "countermeasures": [
+    "CM0009",
+    "CM0018",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028"
+   ],
+   "indicators": [
+    "SIUU-23: Detection of Unauthorized Hardware Debugging"
+   ]
+  },
+  "IA-0002": {
+   "name": "Compromise Software Defined Radio",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0014",
+    "CM0021",
+    "CM0023",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028"
+   ],
+   "indicators": [
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SMSR-15: Unexpected Changes to Software-Defined Radio (SDR) Configuration"
+   ]
+  },
+  "IA-0003": {
+   "name": "Crosslink via Compromised Neighbor",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0035",
+    "CM0036",
+    "CM0055"
+   ],
+   "indicators": [
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "CSNE-43: Anomalous Increase in Crosslink Traffic Volume",
+    "CSNE-44: Communication to Unauthorized Neighboring Spacecraft",
+    "UACE-26: Unauthorized Crosslink Command at Unexpected Time",
+    "UCEB-10: Crosslink Channel Operating Without Encryption",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0004": {
+   "name": "Secondary/Backup Communication Channel",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0005",
+    "CM0009",
+    "CM0014",
+    "CM0021",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0027",
+    "CM0028",
+    "CM0033",
+    "CM0055"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-5: Failed Authentication Attempts Due to RF/EMI Interference",
+    "ARFS-7: Noise Injection Detected in Communication Channels",
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption",
+    "CSNE-3: Backup Channel Activity Outside Scheduled Time Windows",
+    "CSNE-45: Unauthorized Signal Transmission to Secondary Receiver",
+    "CSNE-4: Unexpected Data Transfer Over Backup Channel While Primary Active",
+    "CSNE-5: Traffic Volume Spike on Backup Channel",
+    "CSNE-7: Use of Unexpected Protocol on Backup Channel",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0004.01": {
+   "name": "Ground Station",
+   "tactic": "Initial Access",
+   "parent": "IA-0004",
+   "countermeasures": [
+    "CM0005",
+    "CM0022",
+    "CM0033",
+    "CM0055"
+   ],
+   "indicators": [
+    "ARFS-10: CLTU BIND Authentication Failure",
+    "ARFS-11: Authorized SLE Session Establishment by Attacker (Rogue IP)",
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-5: Failed Authentication Attempts Due to RF/EMI Interference",
+    "CSNE-1: Unexpected Ground Station IP Address in Communication",
+    "CSNE-24: ARP Spoofing via MAC Address Mismatch",
+    "CSNE-2: ARP Spoofing Attack (Rogue IP)",
+    "CSNE-3: Backup Channel Activity Outside Scheduled Time Windows",
+    "CSNE-4: Unexpected Data Transfer Over Backup Channel While Primary Active",
+    "CSNE-5: Traffic Volume Spike on Backup Channel",
+    "CSNE-6: Unexpected Communication Protocols in Uplink",
+    "CSNE-7: Use of Unexpected Protocol on Backup Channel",
+    "UACE-24: Unauthorized CLTU-START, STOP, or UNBIND Initiation from Unauthorized User or Rogue IP",
+    "UACE-25: Telecommand Format Tampering in CLTU-TRANSFER_DATA",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UCEB-9: Failed Credential Encryption in SLE Protocol"
+   ]
+  },
+  "IA-0004.02": {
+   "name": "Receiver",
+   "tactic": "Initial Access",
+   "parent": "IA-0004",
+   "countermeasures": [
+    "CM0009",
+    "CM0014",
+    "CM0021",
+    "CM0024",
+    "CM0025",
+    "CM0027",
+    "CM0028",
+    "CM0068"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-7: Noise Injection Detected in Communication Channels",
+    "CSNE-3: Backup Channel Activity Outside Scheduled Time Windows",
+    "CSNE-45: Unauthorized Signal Transmission to Secondary Receiver",
+    "CSNE-4: Unexpected Data Transfer Over Backup Channel While Primary Active",
+    "CSNE-5: Traffic Volume Spike on Backup Channel",
+    "CSNE-7: Use of Unexpected Protocol on Backup Channel",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0005": {
+   "name": "Rendezvous & Proximity Operations",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0037",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0077",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084",
+    "CM0085",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "IA-0005.01": {
+   "name": "Compromise Emanations",
+   "tactic": "Initial Access",
+   "parent": "IA-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0085"
+   ],
+   "indicators": []
+  },
+  "IA-0005.02": {
+   "name": "Docked Vehicle / OSAM",
+   "tactic": "Initial Access",
+   "parent": "IA-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0031",
+    "CM0032",
+    "CM0037",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0050",
+    "CM0065",
+    "CM0077",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "IA-0005.03": {
+   "name": "Proximity Grappling",
+   "tactic": "Initial Access",
+   "parent": "IA-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0037",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0077",
+    "CM0079",
+    "CM0080",
+    "CM0082",
+    "CM0084"
+   ],
+   "indicators": []
+  },
+  "IA-0006": {
+   "name": "Compromise Hosted Payload",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0028",
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0067"
+   ],
+   "indicators": [
+    "CSNE-34: Unusual Data Transmission from Remote Terminal to Subsystem. (1553)"
+   ]
+  },
+  "IA-0007": {
+   "name": "Compromise Ground System",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0005",
+    "CM0011",
+    "CM0012",
+    "CM0013",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0021",
+    "CM0023",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0035",
+    "CM0052",
+    "CM0053",
+    "CM0054",
+    "CM0055",
+    "CM0070"
+   ],
+   "indicators": [
+    "ARFS-10: CLTU BIND Authentication Failure",
+    "ARFS-11: Authorized SLE Session Establishment by Attacker (Rogue IP)",
+    "ARFS-5: Failed Authentication Attempts Due to RF/EMI Interference",
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-1: Unexpected Ground Station IP Address in Communication",
+    "CSNE-24: ARP Spoofing via MAC Address Mismatch",
+    "CSNE-2: ARP Spoofing Attack (Rogue IP)",
+    "CSNE-6: Unexpected Communication Protocols in Uplink",
+    "UACE-24: Unauthorized CLTU-START, STOP, or UNBIND Initiation from Unauthorized User or Rogue IP",
+    "UACE-25: Telecommand Format Tampering in CLTU-TRANSFER_DATA",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-9: Failed Credential Encryption in SLE Protocol"
+   ]
+  },
+  "IA-0007.01": {
+   "name": "Compromise On-Orbit Update",
+   "tactic": "Initial Access",
+   "parent": "IA-0007",
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0005",
+    "CM0011",
+    "CM0012",
+    "CM0013",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0021",
+    "CM0023",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0035",
+    "CM0052",
+    "CM0053",
+    "CM0054",
+    "CM0055"
+   ],
+   "indicators": [
+    "DISE-13: Flight Software Configuration Anomalies",
+    "DISE-1: File or Data Integrity Check Failure",
+    "DISE-2: Unauthorized Modification of On-Orbit Update Binary",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "SIUU-24: Suspicious Firmware Version Rollback",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SIUU-6: Compromised Software Certificates or Digital Signatures",
+    "SIUU-7: Invalid Digital Signature in On-Orbit Update Package"
+   ]
+  },
+  "IA-0007.02": {
+   "name": "Malicious Commanding via Valid GS",
+   "tactic": "Initial Access",
+   "parent": "IA-0007",
+   "countermeasures": [
+    "CM0002",
+    "CM0005",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0035",
+    "CM0050",
+    "CM0052",
+    "CM0053",
+    "CM0054",
+    "CM0055",
+    "CM0070",
+    "CM0073"
+   ],
+   "indicators": [
+    "SMSR-3: Unauthorized State Changes in Critical Sensors",
+    "UACE-4: Unexpected Legitimate Command Sent"
+   ]
+  },
+  "IA-0008": {
+   "name": "Rogue External Entity",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0055"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-3: Invalid RF Command Lock",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "CSNE-1: Unexpected Ground Station IP Address in Communication",
+    "CSNE-6: Unexpected Communication Protocols in Uplink",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UACE-4: Unexpected Legitimate Command Sent",
+    "UACE-5: Unexpected counter increment (valid or invalid count)",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0008.01": {
+   "name": "Rogue Ground Station",
+   "tactic": "Initial Access",
+   "parent": "IA-0008",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0055",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-3: Invalid RF Command Lock",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-1: Unexpected Ground Station IP Address in Communication",
+    "CSNE-6: Unexpected Communication Protocols in Uplink",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UACE-4: Unexpected Legitimate Command Sent",
+    "UACE-5: Unexpected counter increment (valid or invalid count)",
+    "UACE-6: Unauthorized Commands Issued from Unrecognized Ground Station",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0008.02": {
+   "name": "Rogue Spacecraft",
+   "tactic": "Initial Access",
+   "parent": "IA-0008",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0055",
+    "CM0077",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084",
+    "CM0085",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": [
+    "ARFS-12: Rejection of CLTU BIND Due to Tampered/Invalid Credentials",
+    "ARFS-1: Authentication Process Tampering",
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "CSNE-6: Unexpected Communication Protocols in Uplink",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UACE-4: Unexpected Legitimate Command Sent",
+    "UACE-8: Anomalous Command Packet Signatures",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0008.03": {
+   "name": "ASAT/Counterspace Weapon",
+   "tactic": "Initial Access",
+   "parent": "IA-0008",
+   "countermeasures": [
+    "CM0009",
+    "CM0029",
+    "CM0074",
+    "CM0075",
+    "CM0076",
+    "CM0077",
+    "CM0078",
+    "CM0079",
+    "CM0080",
+    "CM0081",
+    "CM0082",
+    "CM0083",
+    "CM0084",
+    "CM0085",
+    "CM0086",
+    "CM0087"
+   ],
+   "indicators": []
+  },
+  "IA-0009": {
+   "name": "Trusted Relationship",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0005",
+    "CM0022",
+    "CM0025",
+    "CM0034",
+    "CM0038",
+    "CM0039",
+    "CM0041"
+   ],
+   "indicators": [
+    "ARFS-1: Authentication Process Tampering",
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0009.01": {
+   "name": "Mission Collaborator (academia, international, etc.)",
+   "tactic": "Initial Access",
+   "parent": "IA-0009",
+   "countermeasures": [
+    "CM0005",
+    "CM0022",
+    "CM0038",
+    "CM0039"
+   ],
+   "indicators": [
+    "ARFS-1: Authentication Process Tampering",
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0009.02": {
+   "name": "Vendor",
+   "tactic": "Initial Access",
+   "parent": "IA-0009",
+   "countermeasures": [
+    "CM0005",
+    "CM0022",
+    "CM0025",
+    "CM0034",
+    "CM0038",
+    "CM0039",
+    "CM0055"
+   ],
+   "indicators": [
+    "ARFS-1: Authentication Process Tampering",
+    "CSNE-11: Data Exfiltration Detected During Scheduled Communication Windows",
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "SIUU-4: Abnormal Software Update Activity Detected",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "IA-0009.03": {
+   "name": "User Segment",
+   "tactic": "Initial Access",
+   "parent": "IA-0009",
+   "countermeasures": [
+    "CM0005",
+    "CM0022",
+    "CM0038",
+    "CM0039",
+    "CM0041"
+   ],
+   "indicators": [
+    "CSNE-21: Unauthorized Data Transmission from Ground System to External IP"
+   ]
+  },
+  "IA-0010": {
+   "name": "Unauthorized Access During Safe-Mode",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0006",
+    "CM0022",
+    "CM0029",
+    "CM0032",
+    "CM0035",
+    "CM0042",
+    "CM0044",
+    "CM0082"
+   ],
+   "indicators": []
+  },
+  "IA-0011": {
+   "name": "Auxiliary Device Compromise",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0011",
+    "CM0015",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0028",
+    "CM0032",
+    "CM0037",
+    "CM0038",
+    "CM0039"
+   ],
+   "indicators": []
+  },
+  "IA-0012": {
+   "name": "Assembly, Test, and Launch Operation Compromise",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0023",
+    "CM0028",
+    "CM0037",
+    "CM0052"
+   ],
+   "indicators": [
+    "SIUU-23: Detection of Unauthorized Hardware Debugging"
+   ]
+  },
+  "IA-0013": {
+   "name": "Compromise Host Spacecraft",
+   "tactic": "Initial Access",
+   "parent": null,
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0028",
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0067"
+   ],
+   "indicators": []
+  },
+  "IMP-0001": {
+   "name": "Deception (or Misdirection)",
+   "tactic": "Impact",
+   "parent": null,
+   "countermeasures": [],
+   "indicators": []
+  },
+  "IMP-0002": {
+   "name": "Disruption",
+   "tactic": "Impact",
+   "parent": null,
+   "countermeasures": [],
+   "indicators": []
+  },
+  "IMP-0003": {
+   "name": "Denial",
+   "tactic": "Impact",
+   "parent": null,
+   "countermeasures": [],
+   "indicators": []
+  },
+  "IMP-0004": {
+   "name": "Degradation",
+   "tactic": "Impact",
+   "parent": null,
+   "countermeasures": [],
+   "indicators": []
+  },
+  "IMP-0005": {
+   "name": "Destruction",
+   "tactic": "Impact",
+   "parent": null,
+   "countermeasures": [],
+   "indicators": []
+  },
+  "IMP-0006": {
+   "name": "Theft",
+   "tactic": "Impact",
+   "parent": null,
+   "countermeasures": [],
+   "indicators": []
+  },
+  "LM-0001": {
+   "name": "Hosted Payload",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0004",
+    "CM0005",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0028",
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0067"
+   ],
+   "indicators": [
+    "CSNE-14: Unusual Data Transmission Between SpaceWire Routing Switches",
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-25: CAN Bus Error Frames Detected Across Multiple Nodes",
+    "CSNE-26: Frequent CAN Arbitration Loss by Critical Subsystems",
+    "CSNE-27: Unexpected Communication Between SpaceWire Nodes",
+    "CSNE-30: Unauthorized Device Acting as Bus Controller (1553)",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems"
+   ]
+  },
+  "LM-0002": {
+   "name": "Exploit Lack of Bus Segregation",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0022",
+    "CM0031",
+    "CM0032",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0050",
+    "CM0067"
+   ],
+   "indicators": [
+    "CSNE-14: Unusual Data Transmission Between SpaceWire Routing Switches",
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-25: CAN Bus Error Frames Detected Across Multiple Nodes",
+    "CSNE-26: Frequent CAN Arbitration Loss by Critical Subsystems",
+    "CSNE-27: Unexpected Communication Between SpaceWire Nodes",
+    "CSNE-30: Unauthorized Device Acting as Bus Controller (1553)",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems",
+    "CSNE-34: Unusual Data Transmission from Remote Terminal to Subsystem. (1553)",
+    "UACE-23: Unusual Commands from Subsystem Acting as Bus Controller (1553)"
+   ]
+  },
+  "LM-0003": {
+   "name": "Constellation Hopping via Crosslink",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0029",
+    "CM0030",
+    "CM0031",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0035",
+    "CM0036",
+    "CM0055",
+    "CM0067"
+   ],
+   "indicators": [
+    "ARFS-2: Anomalous Authentication Attempts",
+    "ARFS-9: Safe-Mode Activation Due to Signal Jamming",
+    "CSNE-43: Anomalous Increase in Crosslink Traffic Volume",
+    "CSNE-44: Communication to Unauthorized Neighboring Spacecraft",
+    "UACE-26: Unauthorized Crosslink Command at Unexpected Time",
+    "UCEB-10: Crosslink Channel Operating Without Encryption",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication"
+   ]
+  },
+  "LM-0004": {
+   "name": "Visiting Vehicle Interface(s)",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0031",
+    "CM0032",
+    "CM0037",
+    "CM0038",
+    "CM0039",
+    "CM0040",
+    "CM0050",
+    "CM0065",
+    "CM0067"
+   ],
+   "indicators": [
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-25: CAN Bus Error Frames Detected Across Multiple Nodes",
+    "CSNE-26: Frequent CAN Arbitration Loss by Critical Subsystems",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems"
+   ]
+  },
+  "LM-0005": {
+   "name": "Virtualization Escape",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0038",
+    "CM0047"
+   ],
+   "indicators": []
+  },
+  "LM-0006": {
+   "name": "Launch Vehicle Interface",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0038",
+    "CM0039",
+    "CM0040"
+   ],
+   "indicators": [
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-19: Unexpected High-Priority Messages on the CAN Bus",
+    "CSNE-25: CAN Bus Error Frames Detected Across Multiple Nodes",
+    "CSNE-26: Frequent CAN Arbitration Loss by Critical Subsystems",
+    "CSNE-31: Specially Crafted CAN Messages Sent to Critical Subsystems",
+    "CSNE-32: Repeated CAN Message Spoofing Detected Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems"
+   ]
+  },
+  "LM-0006.01": {
+   "name": "Rideshare Payload",
+   "tactic": "Lateral Movement",
+   "parent": "LM-0006",
+   "countermeasures": [
+    "CM0038",
+    "CM0039",
+    "CM0040"
+   ],
+   "indicators": [
+    "CSNE-15: Unexpected Communication Between Subsystems",
+    "CSNE-33: Unusual Communication Between Payload and Critical Subsystems"
+   ]
+  },
+  "LM-0007": {
+   "name": "Credentialed Traversal",
+   "tactic": "Lateral Movement",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0002",
+    "CM0005",
+    "CM0029",
+    "CM0030",
+    "CM0035"
+   ],
+   "indicators": []
+  },
+  "PER-0001": {
+   "name": "Memory Compromise",
+   "tactic": "Persistence",
+   "parent": null,
+   "countermeasures": [
+    "CM0014",
+    "CM0015",
+    "CM0018",
+    "CM0021",
+    "CM0023",
+    "CM0028",
+    "CM0032",
+    "CM0044"
+   ],
+   "indicators": [
+    "MIRE-17: Unauthorized System Call to Open Flash Memory Blocks (/dev/mtd)",
+    "MIRE-1: Anomalous Flash Write Operations Detected in Short Timeframe",
+    "MIRE-2: Anomalous Flash/EEPROM Memory Checksums Detected",
+    "MIRE-3: Unusual Access Frequency to Critical Memory Regions",
+    "MIRE-4: Skipped Boot Integrity Check",
+    "MIRE-5: Memory Corruption Detected in Flight Software",
+    "MIRE-7: Unexpected Memory Value Write or Modification",
+    "MIRE-9: Failed Boot Memory Validation",
+    "SIUU-21: Detection of Anomalous Process Behavior Due to Code Exploitation",
+    "SIUU-22: Abnormal Subsystem Behavior Following Malicious Code Execution",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-8: Malicious Code via New Process",
+    "SIUU-9: Unexpected Software Crash Detected in Flight Software",
+    "SMSR-1: Sensor Data Exceeds Operational Ranges"
+   ]
+  },
+  "PER-0002": {
+   "name": "Backdoor",
+   "tactic": "Persistence",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0007",
+    "CM0009",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0013",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0022",
+    "CM0023",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028",
+    "CM0032",
+    "CM0043",
+    "CM0044"
+   ],
+   "indicators": [
+    "SIUU-11: Suspicious Binary or Script Execution",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SMSR-15: Unexpected Changes to Software-Defined Radio (SDR) Configuration"
+   ]
+  },
+  "PER-0002.01": {
+   "name": "Hardware Backdoor",
+   "tactic": "Persistence",
+   "parent": "PER-0002",
+   "countermeasures": [
+    "CM0009",
+    "CM0018",
+    "CM0022",
+    "CM0024",
+    "CM0025",
+    "CM0026",
+    "CM0027",
+    "CM0028",
+    "CM0032",
+    "CM0043",
+    "CM0044"
+   ],
+   "indicators": [
+    "CSNE-30: Unauthorized Device Acting as Bus Controller (1553)",
+    "SIUU-23: Detection of Unauthorized Hardware Debugging"
+   ]
+  },
+  "PER-0002.02": {
+   "name": "Software Backdoor",
+   "tactic": "Persistence",
+   "parent": "PER-0002",
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0007",
+    "CM0009",
+    "CM0010",
+    "CM0011",
+    "CM0012",
+    "CM0013",
+    "CM0014",
+    "CM0015",
+    "CM0016",
+    "CM0017",
+    "CM0018",
+    "CM0019",
+    "CM0020",
+    "CM0021",
+    "CM0022",
+    "CM0023",
+    "CM0032",
+    "CM0043",
+    "CM0044"
+   ],
+   "indicators": [
+    "SIUU-11: Suspicious Binary or Script Execution",
+    "SIUU-14: Abnormal System Calls Indicative of a Software Backdoor/Malicious Code",
+    "SIUU-2: Unexpected System Integrity Failures in Software",
+    "SIUU-5: Unscheduled Software Updates Detected",
+    "SMSR-15: Unexpected Changes to Software-Defined Radio (SDR) Configuration"
+   ]
+  },
+  "PER-0003": {
+   "name": "Ground System Presence",
+   "tactic": "Persistence",
+   "parent": null,
+   "countermeasures": [
+    "CM0005",
+    "CM0032",
+    "CM0033",
+    "CM0034",
+    "CM0036"
+   ],
+   "indicators": [
+    "ARFS-10: CLTU BIND Authentication Failure",
+    "ARFS-11: Authorized SLE Session Establishment by Attacker (Rogue IP)",
+    "ARFS-5: Failed Authentication Attempts Due to RF/EMI Interference",
+    "CSNE-10: Transmission to Unauthorized Ground Station Detected",
+    "CSNE-23: Sudden Increase in Bandwidth Usage from Ground System",
+    "CSNE-24: ARP Spoofing via MAC Address Mismatch",
+    "CSNE-2: ARP Spoofing Attack (Rogue IP)",
+    "CSNE-6: Unexpected Communication Protocols in Uplink",
+    "UACE-24: Unauthorized CLTU-START, STOP, or UNBIND Initiation from Unauthorized User or Rogue IP",
+    "UACE-25: Telecommand Format Tampering in CLTU-TRANSFER_DATA",
+    "UACE-3: Legitimate Command with Malicious Parameters Targeting Subsystems",
+    "UCEB-9: Failed Credential Encryption in SLE Protocol"
+   ]
+  },
+  "PER-0004": {
+   "name": "Replace Cryptographic Keys",
+   "tactic": "Persistence",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0028",
+    "CM0030",
+    "CM0032",
+    "CM0042"
+   ],
+   "indicators": [
+    "CSNE-16: Suspicious Network Traffic Without Expected Encryption",
+    "DISE-1: File or Data Integrity Check Failure",
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication",
+    "UCEB-3: Unexpected Access to Cryptographic Keys",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "PER-0005": {
+   "name": "Credentialed Persistence",
+   "tactic": "Persistence",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0002",
+    "CM0005",
+    "CM0029",
+    "CM0030",
+    "CM0035"
+   ],
+   "indicators": [
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication",
+    "UCEB-3: Unexpected Access to Cryptographic Keys",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings"
+   ]
+  },
+  "RD-0001": {
+   "name": "Acquire Infrastructure",
+   "tactic": "Resource Development",
+   "parent": null,
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0001.01": {
+   "name": "Ground Station Equipment",
+   "tactic": "Resource Development",
+   "parent": "RD-0001",
+   "countermeasures": [
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0001.02": {
+   "name": "Commercial Ground Station Services",
+   "tactic": "Resource Development",
+   "parent": "RD-0001",
+   "countermeasures": [
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0001.03": {
+   "name": "Spacecraft",
+   "tactic": "Resource Development",
+   "parent": "RD-0001",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0001.04": {
+   "name": "Launch Facility",
+   "tactic": "Resource Development",
+   "parent": "RD-0001",
+   "countermeasures": [
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0002": {
+   "name": "Compromise Infrastructure",
+   "tactic": "Resource Development",
+   "parent": null,
+   "countermeasures": [
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "RD-0002.01": {
+   "name": "Mission-Operated Ground System",
+   "tactic": "Resource Development",
+   "parent": "RD-0002",
+   "countermeasures": [
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "RD-0002.02": {
+   "name": "3rd Party Ground System",
+   "tactic": "Resource Development",
+   "parent": "RD-0002",
+   "countermeasures": [
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "RD-0002.03": {
+   "name": "3rd-Party Spacecraft",
+   "tactic": "Resource Development",
+   "parent": "RD-0002",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0003": {
+   "name": "Obtain Cyber Capabilities",
+   "tactic": "Resource Development",
+   "parent": null,
+   "countermeasures": [
+    "CM0005",
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0003.01": {
+   "name": "Exploit/Payload",
+   "tactic": "Resource Development",
+   "parent": "RD-0003",
+   "countermeasures": [
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0003.02": {
+   "name": "Cryptographic Keys",
+   "tactic": "Resource Development",
+   "parent": "RD-0003",
+   "countermeasures": [
+    "CM0005",
+    "CM0009"
+   ],
+   "indicators": [
+    "MIRE-12: Unexpected Modification to Encryption Memory/Table",
+    "UCEB-11: Use of Account or Cryptographic Keys at Unexpected Times",
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication",
+    "UCEB-3: Unexpected Access to Cryptographic Keys",
+    "UCEB-4: Unexpected Changes to Encryption Configuration Settings",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "RD-0004": {
+   "name": "Stage Capabilities",
+   "tactic": "Resource Development",
+   "parent": null,
+   "countermeasures": [
+    "CM0005",
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0004.01": {
+   "name": "Identify/Select Delivery Mechanism",
+   "tactic": "Resource Development",
+   "parent": "RD-0004",
+   "countermeasures": [
+    "CM0005",
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0004.02": {
+   "name": "Upload Exploit/Payload",
+   "tactic": "Resource Development",
+   "parent": "RD-0004",
+   "countermeasures": [
+    "CM0005",
+    "CM0009"
+   ],
+   "indicators": []
+  },
+  "RD-0005": {
+   "name": "Obtain Non-Cyber Capabilities",
+   "tactic": "Resource Development",
+   "parent": null,
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0005.01": {
+   "name": "Launch Services",
+   "tactic": "Resource Development",
+   "parent": "RD-0005",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0005.02": {
+   "name": "Non-Kinetic Physical ASAT",
+   "tactic": "Resource Development",
+   "parent": "RD-0005",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0005.03": {
+   "name": "Kinetic Physical ASAT",
+   "tactic": "Resource Development",
+   "parent": "RD-0005",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "RD-0005.04": {
+   "name": "Electronic ASAT",
+   "tactic": "Resource Development",
+   "parent": "RD-0005",
+   "countermeasures": [
+    "CM0009",
+    "CM0077"
+   ],
+   "indicators": []
+  },
+  "REC-0001": {
+   "name": "Gather Spacecraft Design Information",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.01": {
+   "name": "Software Design",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.02": {
+   "name": "Firmware",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": [
+    "SIUU-2: Unexpected System Integrity Failures in Software"
+   ]
+  },
+  "REC-0001.03": {
+   "name": "Cryptographic Algorithms",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": [
+    "UCEB-1: Repeated Use of Cryptographic Keys from Unusual Locations",
+    "UCEB-2: Use of Old or Rotated Cryptographic Keys for Authentication",
+    "UCEB-3: Unexpected Access to Cryptographic Keys",
+    "UCEB-7: Modification of Encryption Algorithms"
+   ]
+  },
+  "REC-0001.04": {
+   "name": "Data Bus",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.05": {
+   "name": "Thermal Control System",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.06": {
+   "name": "Maneuver & Control",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.07": {
+   "name": "Payload",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.08": {
+   "name": "Power",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0001.09": {
+   "name": "Fault Management",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0001",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0002": {
+   "name": "Gather Spacecraft Descriptors",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0002.01": {
+   "name": "Identifiers",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0002",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0002.02": {
+   "name": "Organization",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0002",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0002.03": {
+   "name": "Operations",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0002",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0003": {
+   "name": "Gather Spacecraft Communications Information",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0002",
+    "CM0005",
+    "CM0029",
+    "CM0030",
+    "CM0035"
+   ],
+   "indicators": []
+  },
+  "REC-0003.01": {
+   "name": "Communications Equipment",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0003",
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0029"
+   ],
+   "indicators": []
+  },
+  "REC-0003.02": {
+   "name": "Commanding Details",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0003",
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0029"
+   ],
+   "indicators": [
+    "DISE-17: Unauthorized Modification of Critical Onboard Values"
+   ]
+  },
+  "REC-0003.03": {
+   "name": "Mission-Specific Channel Scanning",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0003",
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0029"
+   ],
+   "indicators": []
+  },
+  "REC-0003.04": {
+   "name": "Valid Credentials",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0003",
+   "countermeasures": [
+    "CM0001",
+    "CM0002",
+    "CM0005",
+    "CM0029",
+    "CM0030",
+    "CM0035"
+   ],
+   "indicators": []
+  },
+  "REC-0004": {
+   "name": "Gather Launch Information",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0004.01": {
+   "name": "Flight Termination",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0004",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0005": {
+   "name": "Eavesdropping",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0029",
+    "CM0036",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": []
+  },
+  "REC-0005.01": {
+   "name": "Uplink Intercept Eavesdropping",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0036",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": []
+  },
+  "REC-0005.02": {
+   "name": "Downlink Intercept",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0029",
+    "CM0036",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": []
+  },
+  "REC-0005.03": {
+   "name": "Proximity Operations",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0003",
+    "CM0029",
+    "CM0036",
+    "CM0072",
+    "CM0073"
+   ],
+   "indicators": []
+  },
+  "REC-0005.04": {
+   "name": "Active Scanning (RF/Optical)",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0005",
+   "countermeasures": [
+    "CM0002",
+    "CM0029"
+   ],
+   "indicators": []
+  },
+  "REC-0006": {
+   "name": "Gather FSW Development Information",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0006.01": {
+   "name": "Development Environment",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0006",
+   "countermeasures": [
+    "CM0001",
+    "CM0004",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0006.02": {
+   "name": "Security Testing Tools",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0006",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0007": {
+   "name": "Monitor for Safe-Mode Indicators",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0006",
+    "CM0073",
+    "CM0082"
+   ],
+   "indicators": []
+  },
+  "REC-0008": {
+   "name": "Gather Supply Chain Information",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0007"
+   ],
+   "indicators": []
+  },
+  "REC-0008.01": {
+   "name": "Hardware Recon",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0008",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0008.02": {
+   "name": "Software Recon",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0008",
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0007"
+   ],
+   "indicators": []
+  },
+  "REC-0008.03": {
+   "name": "Known Vulnerabilities",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0008",
+   "countermeasures": [
+    "CM0005",
+    "CM0007",
+    "CM0008"
+   ],
+   "indicators": []
+  },
+  "REC-0008.04": {
+   "name": "Business Relationships",
+   "tactic": "Reconnaissance",
+   "parent": "REC-0008",
+   "countermeasures": [
+    "CM0001",
+    "CM0005"
+   ],
+   "indicators": []
+  },
+  "REC-0009": {
+   "name": "Gather Mission Information",
+   "tactic": "Reconnaissance",
+   "parent": null,
+   "countermeasures": [
+    "CM0001",
+    "CM0005",
+    "CM0082"
+   ],
+   "indicators": []
+  }
+ },
+ "countermeasures": {
+  "CM0001": "Protect Sensitive Information",
+  "CM0002": "COMSEC",
+  "CM0003": "TEMPEST",
+  "CM0004": "Development Environment Security",
+  "CM0005": "Ground-based Countermeasures",
+  "CM0006": "Cloaking Safe-mode",
+  "CM0007": "Software Version Numbers",
+  "CM0008": "Security Testing Results",
+  "CM0009": "Threat Intelligence Program",
+  "CM0010": "Update Software",
+  "CM0011": "Vulnerability Scanning",
+  "CM0012": "Software Bill of Materials",
+  "CM0013": "Dependency Confusion",
+  "CM0014": "Secure boot",
+  "CM0015": "Software Source Control",
+  "CM0016": "CWE List",
+  "CM0017": "Coding Standard",
+  "CM0018": "Dynamic Testing",
+  "CM0019": "Static Analysis",
+  "CM0020": "Threat modeling",
+  "CM0021": "Software Digital Signature",
+  "CM0022": "Criticality Analysis",
+  "CM0023": "Configuration Management",
+  "CM0024": "Anti-counterfeit Hardware",
+  "CM0025": "Supplier Review",
+  "CM0026": "Original Component Manufacturer",
+  "CM0027": "ASIC/FPGA Manufacturing  ",
+  "CM0028": "Tamper Protection",
+  "CM0029": "TRANSEC",
+  "CM0030": "Crypto Key Management",
+  "CM0031": "Authentication",
+  "CM0032": "On-board Intrusion Detection & Prevention",
+  "CM0033": "Relay Protection",
+  "CM0034": "Monitor Critical Telemetry Points",
+  "CM0035": "Protect Authenticators",
+  "CM0036": "Session Termination",
+  "CM0037": "Disable Physical Ports",
+  "CM0038": "Segmentation",
+  "CM0039": "Least Privilege",
+  "CM0040": "Shared Resource Leakage",
+  "CM0041": "User Training",
+  "CM0042": "Robust Fault Management",
+  "CM0043": "Backdoor Commands",
+  "CM0044": "Cyber-safe Mode",
+  "CM0045": "Error Detection and Correcting Memory ",
+  "CM0046": "Long Duration Testing",
+  "CM0047": "Operating System Security",
+  "CM0048": "Resilient Position, Navigation, and Timing",
+  "CM0049": "Machine Learning Data Integrity",
+  "CM0050": "On-board Message Encryption",
+  "CM0051": "Fault Injection Redundancy",
+  "CM0052": "Insider Threat Protection",
+  "CM0053": "Physical Security Controls",
+  "CM0054": "Two-Person Rule",
+  "CM0055": "Secure Command Mode(s)",
+  "CM0056": "Data Backup",
+  "CM0057": "Tamper Resistant Body",
+  "CM0058": "Power Randomization",
+  "CM0059": "Power Consumption Obfuscation",
+  "CM0060": "Secret Shares",
+  "CM0061": "Power Masking",
+  "CM0062": "Dummy Process - Aggregator Node",
+  "CM0063": "Increase Clock Cycles/Timing",
+  "CM0064": "Dual Layer Protection",
+  "CM0065": "OSAM Dual Authorization",
+  "CM0066": "Model-based System Verification",
+  "CM0067": "Smart Contracts",
+  "CM0068": "Reinforcement Learning",
+  "CM0069": "Process White Listing",
+  "CM0070": "Alternate Communications Paths",
+  "CM0071": "Communication Physical Medium",
+  "CM0072": "Protocol Update / Refactoring",
+  "CM0073": "Traffic Flow Analysis Defense",
+  "CM0074": "Distributed Constellations",
+  "CM0075": "Proliferated Constellations",
+  "CM0076": "Diversified Architectures",
+  "CM0077": "Space Domain Awareness",
+  "CM0078": "Space-Based Radio Frequency Mapping",
+  "CM0079": "Maneuverability",
+  "CM0080": "Stealth Technology",
+  "CM0081": "Defensive Jamming and Spoofing",
+  "CM0082": "Deception and Decoys",
+  "CM0083": "Antenna Nulling and Adaptive Filtering",
+  "CM0084": "Physical Seizure",
+  "CM0085": "Electromagnetic Shielding",
+  "CM0086": "Filtering and Shuttering",
+  "CM0087": "Defensive Dazzling/Blinding",
+  "CM0088": "Organizational Policy",
+  "CM0089": "Assessment & Authorization",
+  "CM0090": "Continuous Monitoring"
+ }
+}

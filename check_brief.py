@@ -33,6 +33,7 @@ import sys
 from datetime import datetime
 
 from sanitize import sanitize_text
+import sparta
 from tools.file_reader import list_source_files
 
 MARKING = re.compile(r"UNCLASSIFIED\s*//\s*FOR\s+EDUCATIONAL\s+USE", re.I)
@@ -294,6 +295,16 @@ def check(brief, corpus, must_not_appear=(), review_terms=(), expect_date=None):
     ids = sorted(set(ATTACK_ID.findall(brief)))
     if ids:
         r.add("INFO", "mitre", f"Verify these technique IDs against MITRE ATT&CK/ATLAS: {', '.join(ids)}")
+
+    # 12. SPARTA technique IDs must exist in the shipped SPARTA index.
+    sparta_ids = sparta.ids_in(brief)
+    if sparta_ids:
+        bad = sparta.unknown_ids(brief)
+        if bad:
+            r.add("FAIL", "sparta", f"SPARTA IDs not in SPARTA {sparta.version()}: {', '.join(bad)}")
+        else:
+            r.add("PASS", "sparta", f"All {len(sparta_ids)} SPARTA ID(s) exist in SPARTA {sparta.version()}. "
+                  "Whether each fits its item is a judgment to review by hand.")
 
     return r
 

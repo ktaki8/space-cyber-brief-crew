@@ -22,6 +22,7 @@ class Condition:
     sanitize: bool = True
     code_enforcement: bool = True   # citation retry, date, run ID, integrity note
     topology: str = TOPOLOGY_CREW
+    sparta: bool = False            # SPARTA catalog for the Analyst, lookups in code
 
 
-SHIPPED = Condition("shipped")
+SHIPPED = Condition("shipped", sparta=True)

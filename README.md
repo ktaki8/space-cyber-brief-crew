@@ -215,6 +215,19 @@ Each attack is a **goal** (false attribution, severity inflation, a planted refe
 
 The first audit found that instructions smuggled in Unicode tag characters (U+E0000 block), which render as nothing but many tokenizers read, passed straight through the sanitizer. The sanitizer now strips and reports them. Instructions in other languages and in ordinary prose still reach the model; the sanitizer is a known-pattern filter, and the tool-free agents, the checker and human review stand behind it. All markers are fictional and all links use the reserved `.invalid` domain.
 
+## SPARTA mapping
+
+The shipped pipeline maps each item to [SPARTA](https://sparta.aerospace.org), The Aerospace Corporation's matrix of tactics and techniques against spacecraft, alongside ATT&CK and ATLAS. The split follows the rest of the design: the model makes the judgment, and code does everything that can be looked up.
+
+- The Analyst receives the SPARTA v3.2 catalog (216 techniques) as text, not as a tool, and may assign IDs only from it, or write `none`.
+- Before the brief is saved, code rejects any SPARTA ID that does not exist and sends the brief back to the Writer, the same way it handles invented source files.
+- Code then appends a **SPARTA Reference** table with each ID's official name, tactic, related SPARTA countermeasures, and SPARTA indicators to watch. These come from the index, so the model cannot misname a technique or invent a countermeasure.
+- `check_brief.py` fails any brief that uses a SPARTA ID not in the index. Whether an ID fits its item is still a judgment for the reviewer.
+
+The index (`sparta/data/index.json`) is built from SPARTA's STIX 2.1 release. To update it, download a newer bundle and run `python -m sparta.build_index path/to/sparta_data.json`. The November 2026 evaluation predates SPARTA mapping, and its arms do not use it.
+
+SPARTA content: The Aerospace Corporation. This work is reproduced and distributed with the permission of The Aerospace Corporation. See [`sparta/NOTICE.md`](sparta/NOTICE.md).
+
 ## Web API
 
 `api.py` is a FastAPI service. Run it locally with `uvicorn api:app --reload` and open `http://127.0.0.1:8000/docs` to try the endpoints.
@@ -261,6 +274,7 @@ corpora/live/     Live feed pulls from fetch_sources.py (not committed)
 demo/             Prompt-injection demo corpus and canary list
 output/           Generated briefs
 sources/          Illustrative sample corpus (default)
+sparta/           SPARTA index, lookups, and the script that builds the index
 tests/            Tests (no model calls)
 tools/            File reader tool used by the Collector
 .env.example      Template for .env (keys, model, options)
@@ -287,7 +301,7 @@ Also archived in Carnegie Mellon University's KiltHub repository: https://doi.or
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT. See [`LICENSE`](LICENSE). The SPARTA data in `sparta/data/` is not covered by the MIT license; see [`sparta/NOTICE.md`](sparta/NOTICE.md).
 
 ## Authors
 
