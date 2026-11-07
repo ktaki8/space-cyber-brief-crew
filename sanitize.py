@@ -6,6 +6,8 @@ would recognize as addressed to a machine:
 
   - HTML comments (<!-- ... -->), which Markdown renderers hide
   - invisible Unicode characters (zero-width spaces, bidirectional overrides)
+  - text smuggled in Unicode TAG characters, which render as nothing but
+    many model tokenizers still read
   - paragraphs addressed to AI or automated systems ("SYSTEM NOTICE",
     "note to automated summarization systems", "ignore previous
     instructions", ...)
@@ -30,6 +32,9 @@ MARKER = (
 
 HTML_COMMENT = re.compile(r"<!--.*?(?:-->|\Z)", re.S)
 INVISIBLE = re.compile("[\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]")
+# Unicode TAG block (U+E0000-U+E007F): invisible on screen, but many model
+# tokenizers read it, so ASCII text can be smuggled in as tags.
+TAGS = re.compile("[\U000E0000-\U000E007F]+")
 
 # Phrases that address the model rather than a human reader. High precision
 # matters more than recall here: a false positive hides real reporting.
@@ -67,6 +72,13 @@ class SanitizeResult:
 
 def sanitize_text(text: str) -> SanitizeResult:
     findings = []
+
+    def _tags(match):
+        decoded = "".join(chr(ord(c) - 0xE0000) for c in match.group(0) if 0xE0020 <= ord(c) < 0xE007F)
+        findings.append(Finding("unicode_tags", decoded.strip(), "hidden Unicode tag characters (ASCII smuggling)"))
+        return " " + MARKER.format(what="text hidden in invisible Unicode tag characters") + " "
+
+    text = TAGS.sub(_tags, text)
 
     count = len(INVISIBLE.findall(text))
     if count:
