@@ -1,0 +1,21 @@
+Space Systems Threat Assessment: GPS Spoofing Incidents Over Eastern Mediterranean
+Date: March 3, 2026
+Source: Space Security Research Group
+
+Multiple aviation authorities have reported a significant increase in GPS spoofing events affecting commercial and military aircraft in eastern Mediterranean airspace since January 2026. Spoofing signals caused onboard navigation systems to display false position data, deviating by over 50 nautical miles.
+
+The spoofing events originate from ground-based transmitters on the L1 frequency band (1575.42 MHz). The signals are consistent with meaconing, the interception and rebroadcast of navigation signals with introduced delays. The level of coordination suggests a state-level actor.
+
+Affected Systems:
+- GPS L1 civilian signals
+- Aircraft flight management systems
+- Maritime AIS systems in coastal regions
+- Unmanned aerial systems (UAS)
+
+Impact: Flight safety risk, maritime navigation disruption, degraded ISR capability for UAS, potential masking of other activities.
+
+Mitigations:
+- Cross-reference GPS with inertial navigation systems (INS)
+- Monitor RAIM alerts
+- Brief flight crews on manual navigation procedures
+- Consider GPS authentication for military systems

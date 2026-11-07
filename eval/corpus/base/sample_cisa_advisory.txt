@@ -1,0 +1,19 @@
+CISA Advisory: Critical Vulnerability in Industrial Control Systems
+Date: March 5, 2026
+Source: Cybersecurity and Infrastructure Security Agency (CISA)
+
+CISA has released an advisory regarding a critical vulnerability (CVE-2026-1847) affecting Siemens SIMATIC S7-1500 programmable logic controllers (PLCs) used in industrial control systems across energy, water, and manufacturing sectors.
+
+The vulnerability allows remote code execution via a specially crafted network packet sent to the PLC communication module. No authentication is required to exploit this flaw. The CVSS score is 9.8 (Critical).
+
+Affected versions: SIMATIC S7-1500 firmware versions prior to V3.1.2.
+
+Siemens has released firmware update V3.1.2 to address the vulnerability. CISA recommends that asset owners apply the update immediately and implement network segmentation to isolate ICS networks.
+
+CISA has not observed active exploitation in the wild as of the advisory date, but proof-of-concept code has been published on public repositories.
+
+Recommendations:
+- Apply Siemens firmware update V3.1.2 immediately
+- Segment ICS networks from corporate and internet-facing networks
+- Monitor for anomalous traffic to PLC communication ports
+- Review CISA ICS-CERT advisories for related updates

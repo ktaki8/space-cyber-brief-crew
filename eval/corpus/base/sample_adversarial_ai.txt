@@ -1,0 +1,26 @@
+Advisory: Adversarial Attacks on Satellite Imagery Classification Models
+Date: March 1, 2026
+Source: AI Security Working Group - Bulletin 2026-003
+
+Researchers demonstrated that satellite imagery classification models are vulnerable to adversarial perturbation attacks. By introducing imperceptible pixel-level modifications, attackers can cause models to misclassify terrain, infrastructure, and vehicle types.
+
+Using projected gradient descent (PGD) attacks against three CNN architectures:
+- 94% misclassification rate for military vehicle detection
+- 87% misclassification rate for infrastructure identification
+- 91% success rate for terrain classification errors
+
+The attack is transferable across model architectures.
+
+Relevance to Space Systems: Direct implications for satellite-based ISR pipelines using automated image classification. If adversaries modify images in transit or at sensor level, analytical products become unreliable.
+
+MITRE ATLAS Mapping:
+- AML.T0043 Craft Adversarial Data
+- AML.T0015 Evade ML Model
+- AML.T0048 Transfer Learning Attack
+
+Recommendations:
+- Implement adversarial robustness testing
+- Add input validation and anomaly detection to imagery pipelines
+- Maintain human-in-the-loop review for high-stakes decisions
+- Monitor MITRE ATLAS for updated techniques
+- Consider certified defense methods such as randomized smoothing

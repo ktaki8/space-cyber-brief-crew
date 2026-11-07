@@ -16,7 +16,7 @@ import re
 import sys
 from datetime import datetime, timezone
 
-from signals import FEEDS, clean_html, collect_signals, is_space_relevant
+from signals import FEEDS, clean_html, collect_signals, is_space_relevant, needs_human_triage
 
 DEFAULT_OUT = os.path.join("corpora", "live")
 MAX_BODY_CHARS = 8000
@@ -93,6 +93,12 @@ def main(argv=None):
         if key not in seen:
             seen.add(key)
             unique.append(i)
+
+    short = [i for i in unique if needs_human_triage(i["title"], i.get("summary", ""))]
+    if short:
+        print(f"{len(short)} item(s) have too little text to score. Review these by hand:")
+        for i in short:
+            print(f"  - {i['title']} {i['link']}")
 
     selected = [i for i in unique if i["score"] >= args.min_score]
     if args.space_only:

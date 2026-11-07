@@ -21,10 +21,13 @@ preferred-citation:
   authors:
     - given-names: Khadija
       family-names: Taki
-      affiliation: "Carnegie Mellon University, Heinz College"
   year: 2026
   status: preprint
   publisher:
     name: Zenodo
-  doi: "10.5281/zenodo.22839736"
-  url: "https://doi.org/10.5281/zenodo.22839736"
+  doi: "10.5281/zenodo.22839735"
+  url: "https://doi.org/10.5281/zenodo.22839735"
+  identifiers:
+    - type: doi
+      value: "10.1184/r1/33941098.v1"
+      description: "Also archived in Carnegie Mellon University KiltHub"
