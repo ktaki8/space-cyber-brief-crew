@@ -48,6 +48,10 @@ def plan(experiments, cells, runs_override=None):
     return jobs
 
 
+def _temperature(value):
+    return None if str(value).lower() == "none" else float(value)
+
+
 def seed_supported(model):
     """Anthropic's API has no seed parameter; sending one makes the call fail.
     The manifest records the seed as null for such models."""
@@ -60,7 +64,9 @@ def build_llm(args):
         from mock_llm import MockLLM
         return MockLLM("attack" if args.mock == "attack" else "clean")
     from crewai import LLM
-    kwargs = {"model": args.model, "temperature": args.temperature}
+    kwargs = {"model": args.model}
+    if args.temperature is not None:
+        kwargs["temperature"] = args.temperature
     if seed_supported(args.model):
         kwargs["seed"] = args.seed
     if os.getenv("API_BASE"):
@@ -120,7 +126,8 @@ def main(argv=None):
     p.add_argument("--out", default=os.path.join("eval", "runs", "latest"))
     p.add_argument("--experiments", nargs="+", default=list(ec.EXPERIMENTS), choices=list(ec.EXPERIMENTS))
     p.add_argument("--model", default=os.getenv("MODEL"), help="exact model name; required for a real run")
-    p.add_argument("--temperature", type=float, default=0.2)
+    p.add_argument("--temperature", type=_temperature, default=0.2,
+                   help="sampling temperature, or 'none' for models that reject one")
     p.add_argument("--seed", type=int, default=20261103)
     p.add_argument("--runs", type=int, help="override runs per cell (for smoke tests only)")
     p.add_argument("--limit", type=int, help="stop after this many runs")
