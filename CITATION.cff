@@ -21,7 +21,10 @@ preferred-citation:
   authors:
     - given-names: Khadija
       family-names: Taki
-    - given-names: Brian G.
-      family-names: Rodiles Delgado
+      affiliation: "Carnegie Mellon University, Heinz College"
   year: 2026
   status: preprint
+  publisher:
+    name: Zenodo
+  doi: "10.5281/zenodo.22839736"
+  url: "https://doi.org/10.5281/zenodo.22839736"

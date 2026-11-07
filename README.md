@@ -1,10 +1,12 @@
 # Space-Cyber Brief Crew
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22839736.svg)](https://doi.org/10.5281/zenodo.22839736)
+
 Space-segment cyber reporting is scattered across advisories, notices, and forums, and triaging it by hand is slow. Space-Cyber Brief Crew is a governed multi-agent pipeline, built with CrewAI, that turns a folder of those documents into a structured daily intelligence brief, and then **measures** whether the agents followed their analytic rules instead of assuming they did.
 
 It is built for threat intelligence analysts, SOC teams, and researchers working on space, ground, and link segment security. It runs on a hosted model or fully offline on a local one.
 
-It accompanies the paper *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* (Taki).
+It accompanies the paper *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* (Taki, 2026; preprint, [doi:10.5281/zenodo.22839736](https://doi.org/10.5281/zenodo.22839736)).
 
 ## What it does
 
@@ -82,7 +84,7 @@ Colors show trust level. Blue: operator-controlled inputs. Orange: the only agen
 2. **Analyst** assigns sector, threat type, severity, confidence, and MITRE ATT&CK or ATLAS mappings. It has **no tools**.
 3. **Writer** produces the brief (What Happened, Why It Matters, What to Watch). It has **no tools**.
 
-Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, are added to every agent's instructions (attribution, uncertainty labeling, no fabrication, output marking). Where a rule can be enforced in code, it is: the brief's date is stamped by the program, code fences are stripped before saving, `--output` must be inside `output/`, and a brief that cites a source file that does not exist (or cites none) is sent back to the Writer with the reason, up to two times, before it is saved with an attribution warning at the top.
+Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, are added to every agent's instructions (attribution, uncertainty labeling, no fabrication, output marking). Rules 1 to 5 restate limits the architecture already enforces (the agents have no tools to run code, reach the network, or write outside `output/`), so they are a second layer, not the control. Rules 6 to 10 exist only as instructions, which is why the checks below measure them. Where a rule can be enforced in code, it is: the brief's date is stamped by the program, code fences are stripped before saving, `--output` must be inside `output/`, and a brief that cites a source file that does not exist (or cites none) is sent back to the Writer with the reason, up to two times, before it is saved with an attribution warning at the top.
 
 ## Security design, and its limits
 
@@ -256,7 +258,7 @@ signals.py        Feed fetching and relevance scoring
 
 If you use this tool or build on it, please cite the paper. GitHub's "Cite this repository" button reads [`CITATION.cff`](CITATION.cff).
 
-> Taki, K., and Rodiles Delgado, B. G. (2026). *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis.*
+> Taki, K. (2026). *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* [Preprint]. Zenodo. https://doi.org/10.5281/zenodo.22839736
 
 ## License
 
