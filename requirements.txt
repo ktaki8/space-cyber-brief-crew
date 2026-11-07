@@ -1,6 +1,7 @@
 # Tested with crewai 1.15.x on Python 3.10-3.13 (crewai does not support 3.14 as of 1.15).
 # Agent pipeline (main.py, crew.py, check_brief.py)
 crewai>=0.80.0
+# For Claude models also run: pip install "crewai[anthropic]"
 python-dotenv
 pyyaml
 

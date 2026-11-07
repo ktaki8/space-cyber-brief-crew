@@ -48,12 +48,21 @@ def plan(experiments, cells, runs_override=None):
     return jobs
 
 
+def seed_supported(model):
+    """Anthropic's API has no seed parameter; sending one makes the call fail.
+    The manifest records the seed as null for such models."""
+    m = (model or "").lower()
+    return not (m.startswith("anthropic/") or m.startswith("claude"))
+
+
 def build_llm(args):
     if args.mock:
         from mock_llm import MockLLM
         return MockLLM("attack" if args.mock == "attack" else "clean")
     from crewai import LLM
-    kwargs = {"model": args.model, "temperature": args.temperature, "seed": args.seed}
+    kwargs = {"model": args.model, "temperature": args.temperature}
+    if seed_supported(args.model):
+        kwargs["seed"] = args.seed
     if os.getenv("API_BASE"):
         kwargs["base_url"] = os.getenv("API_BASE")
     return LLM(**kwargs)
@@ -134,7 +143,9 @@ def main(argv=None):
         return 2
 
     os.makedirs(args.out, exist_ok=True)
-    settings = {"temperature": args.temperature, "seed": args.seed, "api_base": os.getenv("API_BASE")}
+    settings = {"temperature": args.temperature,
+                "seed": args.seed if seed_supported(args.model) else None,
+                "api_base": os.getenv("API_BASE")}
     arms = {n: dataclasses.asdict(c) for n, c in ec.ARMS.items()}
     mf.write(os.path.join(args.out, "manifest.json"),
              mf.build(args.mock and "mock-scripted" or args.model, settings, arms, mock=bool(args.mock)))
