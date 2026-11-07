@@ -122,6 +122,11 @@ def run_one(job, out_dir, args):
 
 
 def main(argv=None):
+    try:  # keys may live in .env at the repo root, as for main.py
+        from dotenv import load_dotenv
+        load_dotenv(os.path.join(ROOT, ".env"))
+    except ImportError:
+        pass
     p = argparse.ArgumentParser()
     p.add_argument("--out", default=os.path.join("eval", "runs", "latest"))
     p.add_argument("--experiments", nargs="+", default=list(ec.EXPERIMENTS), choices=list(ec.EXPERIMENTS))
