@@ -6,6 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 import plain_output
+from provenance import new_run_id, write_chain
 from sanitize import sanitize_text
 from tools.file_reader import list_source_files
 
@@ -90,13 +91,19 @@ def main(argv=None):
     print()
 
     from crew import build_crew
-    crew = build_crew(sources_dir=sources_dir, output_file=os.path.relpath(output_path), sanitize=sanitize)
+    run_id = new_run_id()
+    crew = build_crew(sources_dir=sources_dir, output_file=os.path.relpath(output_path),
+                      sanitize=sanitize, run_id=run_id)
     result = crew.kickoff()
+    chain_path = os.path.splitext(output_path)[0] + "_provenance.json"
+    write_chain(chain_path, run_id, sources_dir, source_files,
+                [t.raw for t in result.tasks_output], output_path)
 
     print()
     print("=" * 60)
     print("  CREW RUN COMPLETE")
     print(f"  Output: {os.path.relpath(output_path)}")
+    print(f"  Chain:  {os.path.relpath(chain_path)}")
     print(f"  Check:  python check_brief.py {os.path.relpath(output_path)} --sources {os.path.relpath(sources_dir)}")
     print("=" * 60)
     return result

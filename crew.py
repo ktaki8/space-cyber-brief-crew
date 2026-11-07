@@ -8,6 +8,8 @@ from guardrails import get_guardrail_prompt
 from sanitize import sanitize_text
 from check_brief import citation_status
 from plain_output import strip_emoji
+from conditions import Condition, SHIPPED, TOPOLOGY_SINGLE
+from provenance import new_run_id
 
 DEFAULT_OUTPUT = os.path.join("output", "daily_brief.md")
 GUARDRAIL_RETRIES = 2
@@ -52,6 +54,27 @@ def ensure_integrity_note(text, quarantined):
     lines += ["", "The source sanitizer quarantined this content before analysis, and it was not used "
               "in this brief. The removed text is saved in the sanitization report for human review.", ""]
     return text.rstrip("\n") + "\n" + "\n".join(lines)
+
+
+MARKING_LINE = "**Classification:** UNCLASSIFIED // FOR EDUCATIONAL USE"
+MARKING_TEST = re.compile(r"UNCLASSIFIED\s*//\s*FOR\s+EDUCATIONAL\s+USE", re.I)
+
+
+def stamp_run_metadata(text, run_id):
+    """Add the run ID and, if missing, the classification banner in code.
+
+    Metadata comes from the runtime, not from the model. The banner is the
+    exact string rule 9 requires, so a compliant brief is left unchanged.
+    """
+    lines = text.split("\n")
+    at = next((i for i, line in enumerate(lines) if line.lstrip().startswith("**Date:**")), None)
+    if at is None:
+        at = 0
+    insert = [f"**Run ID:** {run_id}  "]
+    if not MARKING_TEST.search(text):
+        insert.append(MARKING_LINE)
+    lines[at + 1:at + 1] = insert
+    return "\n".join(lines)
 
 
 def stamp_brief_date(text, today):
@@ -102,18 +125,32 @@ def build_llm():
     return LLM(**kwargs)
 
 
-def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
+def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
+               condition: Condition = SHIPPED, llm=None, extra_tools=None, run_id=None):
+    """Build the crew. With the defaults this is the shipped, governed pipeline.
+
+    condition, llm, and extra_tools exist for the evaluation (eval/): they
+    switch the prompts, rule set, and code enforcement, and hand the ambient
+    baseline its logged probe tools. Nothing a model reads can set them.
+    """
     today = datetime.now(timezone.utc).strftime("%B %d, %Y")
-    agent_configs = load_yaml("config/agents.yaml")
-    task_configs = load_yaml("config/tasks.yaml")
-    guardrails = get_guardrail_prompt()
+    config_dir = condition.config_dir
+    agent_configs = load_yaml(os.path.join(config_dir, "agents.yaml"))
+    task_configs = load_yaml(os.path.join(config_dir, "tasks.yaml"))
+    guardrails = get_guardrail_prompt(exclude=condition.excluded_rules)
+    run_id = run_id or new_run_id()
 
     resolved_sources = resolve_sources_dir(sources_dir)
     file_reader = FileReaderTool(sources_dir=resolved_sources, sanitize=sanitize)
     quarantined = quarantined_sources(resolved_sources) if sanitize else {}
     source_names = list_source_files(resolved_sources)
-    llm = build_llm()
+    llm = llm if llm is not None else build_llm()
     llm_kwargs = {"llm": llm} if llm is not None else {}
+    extra_tools = list(extra_tools or [])
+
+    if condition.topology == TOPOLOGY_SINGLE:
+        return _build_single_agent(agent_configs, task_configs, guardrails, file_reader,
+                                   output_file, llm_kwargs)
 
     collector = Agent(
         role=agent_configs["collector"]["role"],
@@ -121,7 +158,7 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
         backstory=agent_configs["collector"]["backstory"] + "\n\n" + guardrails,
         verbose=True,
         allow_delegation=False,
-        tools=[file_reader],
+        tools=[file_reader] + extra_tools,
         **llm_kwargs,
     )
 
@@ -131,7 +168,7 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
         backstory=agent_configs["analyst"]["backstory"] + "\n\n" + guardrails,
         verbose=True,
         allow_delegation=False,
-        tools=[],
+        tools=list(extra_tools),
         **llm_kwargs,
     )
 
@@ -141,7 +178,7 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
         backstory=agent_configs["writer"]["backstory"] + "\n\n" + guardrails,
         verbose=True,
         allow_delegation=False,
-        tools=[],
+        tools=list(extra_tools),
         **llm_kwargs,
     )
 
@@ -179,21 +216,26 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
             return (False, problem + detail)
         if problem:  # retries used up: keep the brief, but say so at the top
             text = f"> **Attribution warning:** {problem} Verify every item against the sources.\n\n" + text
-        text = stamp_brief_date(text, today)
+        text = stamp_run_metadata(stamp_brief_date(text, today), run_id)
         return (True, ensure_integrity_note(text, quarantined))
 
-    write_task = Task(
-        description=task_configs["write_brief"]["description"]
-        + f"\n\nThe date of this brief is {today}. Write it as **Date:** {today}."
+    # These two instructions belong to the code-enforced layer, so an arm with
+    # that layer off must not receive them either.
+    write_contract = (
+        f"\n\nThe date of this brief is {today}. Write it as **Date:** {today}."
         " Do not use any other date for the brief itself."
         "\n\nThe only valid source file names are: " + ", ".join(source_names)
-        + ". Copy them exactly; never rename, shorten, or invent a file name.",
+        + ". Copy them exactly; never rename, shorten, or invent a file name."
+    ) if condition.code_enforcement else ""
+
+    write_task = Task(
+        description=task_configs["write_brief"]["description"] + write_contract,
         expected_output=task_configs["write_brief"]["expected_output"],
         agent=writer,
         context=[analyze_task],
         output_file=output_file,
-        guardrail=enforce_brief_rules,
-        guardrail_max_retries=GUARDRAIL_RETRIES,
+        **({"guardrail": enforce_brief_rules, "guardrail_max_retries": GUARDRAIL_RETRIES}
+           if condition.code_enforcement else {}),
     )
 
     crew = Crew(
@@ -204,3 +246,23 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True):
     )
 
     return crew
+
+
+def _build_single_agent(agent_configs, task_configs, guardrails, file_reader, output_file, llm_kwargs):
+    """Grounded single-agent comparator: one agent reads the sources and writes the brief."""
+    analyst = Agent(
+        role=agent_configs["single"]["role"],
+        goal=agent_configs["single"]["goal"],
+        backstory=agent_configs["single"]["backstory"] + "\n\n" + guardrails,
+        verbose=True,
+        allow_delegation=False,
+        tools=[file_reader],
+        **llm_kwargs,
+    )
+    task = Task(
+        description=task_configs["single_brief"]["description"],
+        expected_output=task_configs["single_brief"]["expected_output"],
+        agent=analyst,
+        output_file=output_file,
+    )
+    return Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True)

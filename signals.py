@@ -58,7 +58,24 @@ SPACE_TERMS = [
     "gps", "gnss", "pnt", "vsat", "orbit", "orbital", "sdr",
     # French equivalents, for CERT-FR
     "spatial", "station sol", "navigation par satellite",
+    # Names and synonyms a keyword list misses. Chosen from the development half
+    # of eval/gate/labeled_items.csv, so audit them on the held-out half.
+    "starlink", "iridium", "beidou", "satcom", "cubesat", "ads-b",
+    "downlink", "payload operations",
+    # Spanish and German
+    "satélites", "satélite", "estación terrestre", "suplantación de señales",
+    "satellitenterminals", "bodenstationen",
 ]
+
+# Scripts without word spaces: matched as substrings, not whole words.
+NON_LATIN_SPACE_TERMS = [
+    "الأقمار الصناعية", "محطة أرضية",  # Arabic: satellites, ground station
+    "卫星",                            # Chinese: satellite
+]
+
+# Below this many words of title and summary, a keyword score means little. The
+# evidence may sit in an image or attachment, so such items go to a person.
+MIN_SCORABLE_WORDS = 6
 
 # Terms that are space-related only in context: "navigation" in a phone app or
 # "space" in "disk space" are not space threats. These count only when the
@@ -118,6 +135,10 @@ def score_signal(title: str, summary: str) -> tuple[int, list[str]]:
         if _term_found(term, text):
             matched.append(term)
             score += SPACE_WEIGHT
+    for term in NON_LATIN_SPACE_TERMS:
+        if term in text:
+            matched.append(term)
+            score += SPACE_WEIGHT
     if matched:  # context terms count only alongside a clear space term
         for term in CONTEXT_SPACE_TERMS:
             if _term_found(term, text):
@@ -131,7 +152,12 @@ def score_signal(title: str, summary: str) -> tuple[int, list[str]]:
 
 
 def is_space_relevant(matched_terms: list[str]) -> bool:
-    return any(t in SPACE_TERMS for t in matched_terms)
+    return any(t in SPACE_TERMS or t in NON_LATIN_SPACE_TERMS for t in matched_terms)
+
+
+def needs_human_triage(title: str, summary: str) -> bool:
+    """True when there is too little text for keyword scoring to say anything."""
+    return len(f"{title} {summary}".split()) < MIN_SCORABLE_WORDS
 
 
 _CERTFR_YEAR = re.compile(r"CERTFR-(\d{4})-", re.I)

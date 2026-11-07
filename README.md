@@ -1,12 +1,12 @@
 # Space-Cyber Brief Crew
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22839736.svg)](https://doi.org/10.5281/zenodo.22839736)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22839735.svg)](https://doi.org/10.5281/zenodo.22839735)
 
 Space-segment cyber reporting is scattered across advisories, notices, and forums, and triaging it by hand is slow. Space-Cyber Brief Crew is a governed multi-agent pipeline, built with CrewAI, that turns a folder of those documents into a structured daily intelligence brief, and then **measures** whether the agents followed their analytic rules instead of assuming they did.
 
 It is built for threat intelligence analysts, SOC teams, and researchers working on space, ground, and link segment security. It runs on a hosted model or fully offline on a local one.
 
-It accompanies the paper *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* (Taki, 2026; preprint, [doi:10.5281/zenodo.22839736](https://doi.org/10.5281/zenodo.22839736)).
+It accompanies the paper *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* (Taki, 2026; preprint, [doi:10.5281/zenodo.22839735](https://doi.org/10.5281/zenodo.22839735)).
 
 ## What it does
 
@@ -84,11 +84,11 @@ Colors show trust level. Blue: operator-controlled inputs. Orange: the only agen
 2. **Analyst** assigns sector, threat type, severity, confidence, and MITRE ATT&CK or ATLAS mappings. It has **no tools**.
 3. **Writer** produces the brief (What Happened, Why It Matters, What to Watch). It has **no tools**.
 
-Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, are added to every agent's instructions (attribution, uncertainty labeling, no fabrication, output marking). Rules 1 to 5 restate limits the architecture already enforces (the agents have no tools to run code, reach the network, or write outside `output/`), so they are a second layer, not the control. Rules 6 to 10 exist only as instructions, which is why the checks below measure them. Where a rule can be enforced in code, it is: the brief's date is stamped by the program, code fences are stripped before saving, `--output` must be inside `output/`, and a brief that cites a source file that does not exist (or cites none) is sent back to the Writer with the reason, up to two times, before it is saved with an attribution warning at the top.
+Ten operational rules in `guardrails.py`, based on ICD 203 analytic standards, are added to every agent's instructions (attribution, uncertainty labeling, no fabrication, output marking). Rules 1 to 5 restate limits the architecture already enforces, so they are a second layer, not the control. Rules 6 to 10 exist only as instructions, which is why the checks below measure them. Where a rule can be enforced in code, it is: the brief's date is stamped by the program, code fences are stripped before saving, `--output` must be inside `output/`, and a brief that cites a source file that does not exist (or cites none) is sent back to the Writer with the reason, up to two times, before it is saved with an attribution warning at the top.
 
 ## Security design, and its limits
 
-- The Analyst and Writer have no tools, so text injected into a source document cannot make them run commands, read files, or access the network.
+- The Analyst and Writer are given no tools, so text injected into a source document has no framework tool to call through them. This is a property of the audited CrewAI configuration, checked by `tests/test_tool_boundary.py`. It is not operating-system confinement: run the pipeline in a container if you need that, and do not feed its output to anything that would interpret it as instructions.
 - The Collector's file reader takes no arguments. The folder is chosen by the operator when the crew is built (`--sources` or `BRIEF_SOURCES_DIR`), never by the model, and symlinks that point outside it are skipped.
 - `fetch_sources.py` is the only network access, and it runs outside the pipeline under the operator's control. The agents never fetch anything.
 - Before any model reads a source, a sanitizer (`sanitize.py`) quarantines content a human reader would not see or would recognize as addressed to a machine: hidden HTML comments, invisible Unicode characters, and passages such as "SYSTEM NOTICE" or "ignore previous instructions". Each removal is replaced with a visible marker, and `main.py` saves the removed text next to the brief for review. If anything was quarantined, the brief always ends with a "Source integrity" section saying so; the program adds it if the Writer leaves it out. It catches **known patterns only**: an injection written as ordinary analytic prose passes straight through.
@@ -195,6 +195,10 @@ python check_brief.py output/injection_after.md --sources demo/injection --canar
 
 With the sanitizer off, the hidden instructions reach the agents, and in our runs they changed the analysis: the fictional modem advisory was rated Critical with High confidence and attributed to an actor named only in the injected text. With it on, the agents never see those instructions, and the brief shows a quarantine marker instead. Results vary by run and by model, which is the point. See [`demo/README.md`](demo/README.md) for what to look for by hand.
 
+## Evaluating the governance layer
+
+[`eval/`](eval/README.md) is the frozen evaluation kit: a 2x2 test of tools and rules, single-rule ablations, attacks on brief content, claim-level and citation-support scoring, blind double coding, and an audit of the keyword gate. Each run saves its prompts, outputs, tool log, and hashes. The tests use a scripted model, so they exercise the harness and produce no findings.
+
 ## Web API
 
 `api.py` is a FastAPI service. Run it locally with `uvicorn api:app --reload` and open `http://127.0.0.1:8000/docs` to try the endpoints.
@@ -235,7 +239,8 @@ The tests cover the file reader's folder lock, the brief checks, date stamping, 
 ## Repository layout
 
 ```text
-config/           CrewAI agent and task prompts
+config/           CrewAI agent and task prompts (config/neutral/ is used by eval/)
+eval/             Evaluation kit: design, corpus, attacks, scoring, analysis
 corpora/live/     Live feed pulls from fetch_sources.py (not committed)
 demo/             Prompt-injection demo corpus and canary list
 output/           Generated briefs
@@ -250,6 +255,8 @@ fetch_sources.py  Builds a corpus from live CISA advisories
 guardrails.py     Shared operational prompt rules
 main.py           Command-line entry point
 requirements.txt  Python dependencies
+conditions.py     Named experimental conditions (shipped pipeline is the default)
+provenance.py     Run IDs and the SHA-256 source-to-brief chain
 sanitize.py       Source sanitizer: quarantines known injection patterns
 signals.py        Feed fetching and relevance scoring
 ```
@@ -258,7 +265,9 @@ signals.py        Feed fetching and relevance scoring
 
 If you use this tool or build on it, please cite the paper. GitHub's "Cite this repository" button reads [`CITATION.cff`](CITATION.cff).
 
-> Taki, K. (2026). *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* [Preprint]. Zenodo. https://doi.org/10.5281/zenodo.22839736
+> Taki, K. (2026). *Governing the Intelligence Loop: Architectural Mitigations for Epistemic Fragility in Autonomous Space-Cyber Threat Analysis* [Preprint]. Zenodo. https://doi.org/10.5281/zenodo.22839735
+
+Also archived in Carnegie Mellon University's KiltHub repository: https://doi.org/10.1184/r1/33941098.v1
 
 ## License
 
