@@ -4,6 +4,9 @@ crewai>=0.80.0
 python-dotenv
 pyyaml
 
+# Orbital fact-check (orbital/); matplotlib is optional, for timeline plots
+sgp4
+
 # Live sources and web API (fetch_sources.py, api.py)
 feedparser
 fastapi

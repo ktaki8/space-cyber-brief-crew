@@ -23,3 +23,9 @@ output/eval_tmp/
 # Red-team campaign working files
 redteam_runs/
 output/redteam/
+
+# Element sets (Space-Track's user agreement limits redistribution)
+*.tle
+*.3le
+*tle*.txt
+*gp_history*

@@ -192,7 +192,7 @@ def load_canaries(path):
     return data.get("must_not_appear", []), data.get("review_terms", [])
 
 
-def check(brief, corpus, must_not_appear=(), review_terms=(), expect_date=None):
+def check(brief, corpus, must_not_appear=(), review_terms=(), expect_date=None, tle_catalog=None):
     r = Report()
     corpus_text = "\n".join(corpus.values())
 
@@ -306,6 +306,21 @@ def check(brief, corpus, must_not_appear=(), review_terms=(), expect_date=None):
             r.add("PASS", "sparta", f"All {len(sparta_ids)} SPARTA ID(s) exist in SPARTA {sparta.version()}. "
                   "Whether each fits its item is a judgment to review by hand.")
 
+    # 13. Orbital claims tested against element sets (only when TLEs are given).
+    if tle_catalog is not None:
+        import orbital
+        claims = orbital.verify(brief, tle_catalog)
+        bad = [c for c in claims if c.verdict == orbital.CONTRADICTED]
+        unclear = [c for c in claims if c.verdict == orbital.UNVERIFIABLE]
+        for c in bad:
+            r.add("FAIL", "orbital", f"Contradicted by orbital data: \"{c.sentence}\" {c.detail}")
+        for c in unclear:
+            r.add("WARN", "orbital", f"Could not verify: \"{c.sentence}\" {c.detail}")
+        if claims and not bad and not unclear:
+            r.add("PASS", "orbital", f"All {len(claims)} orbital claim(s) agree with the element sets.")
+        elif not claims:
+            r.add("PASS", "orbital", "No orbital claims about satellites in the element sets.")
+
     return r
 
 
@@ -316,6 +331,8 @@ def main(argv=None):
     p.add_argument("--canaries", help="JSON file with must_not_appear and review_terms lists")
     p.add_argument("--expect-date", help="exact date string expected, e.g. 'December 02, 2026'")
     p.add_argument("--today", action="store_true", help="expect today's UTC date (as crew.py writes it)")
+    p.add_argument("--tle", default=os.getenv("ORBITAL_TLE"),
+                   help="element sets (3LE) for testing orbital claims; default $ORBITAL_TLE")
     p.add_argument("--json", action="store_true", help="print results as JSON")
     args = p.parse_args(argv)
 
@@ -335,7 +352,11 @@ def main(argv=None):
         from datetime import timezone
         expect = datetime.now(timezone.utc).strftime("%B %d, %Y")
 
-    report = check(brief, corpus, must, review, expect)
+    catalog = None
+    if args.tle:
+        from orbital import Catalog
+        catalog = Catalog.from_file(args.tle)
+    report = check(brief, corpus, must, review, expect, tle_catalog=catalog)
 
     if args.json:
         print(json.dumps({"brief": args.brief, "failed": report.failed, "results": report.results}, indent=2))

@@ -140,6 +140,10 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
     task_configs = load_yaml(os.path.join(config_dir, "tasks.yaml"))
     guardrails = get_guardrail_prompt(exclude=condition.excluded_rules)
     run_id = run_id or new_run_id()
+    tle_catalog = None
+    if condition.sparta and os.getenv("ORBITAL_TLE"):
+        from orbital import Catalog  # space-domain checks travel with the shipped pipeline
+        tle_catalog = Catalog.from_file(os.getenv("ORBITAL_TLE"))
 
     resolved_sources = resolve_sources_dir(sources_dir)
     file_reader = FileReaderTool(sources_dir=resolved_sources, sanitize=sanitize)
@@ -218,6 +222,13 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
         if not problem and bad_sparta:
             problem = "The brief uses SPARTA IDs that do not exist: " + ", ".join(bad_sparta) + "."
             detail = " Use only the IDs the analyst gave, copied exactly, or write 'SPARTA: none identified'."
+        if not problem and tle_catalog is not None:
+            import orbital
+            wrong = [c for c in orbital.verify(text, tle_catalog) if c.verdict == orbital.CONTRADICTED]
+            if wrong:
+                problem = "Orbital claims contradicted by tracking data: " + " ".join(
+                    f'"{c.sentence}" ({c.detail})' for c in wrong)
+                detail = " Remove these claims or report them only as unverified source statements."
         if problem and write_task.retry_count < GUARDRAIL_RETRIES:
             return (False, problem + detail)
         if problem:  # retries used up: keep the brief, but say so at the top
@@ -226,6 +237,9 @@ def build_crew(sources_dir=None, output_file=DEFAULT_OUTPUT, sanitize=True,
         text = ensure_integrity_note(text, quarantined)
         if condition.sparta:
             text = sparta.append_reference(text)
+        if tle_catalog is not None:
+            import orbital
+            text = orbital.append_report(text, tle_catalog)
         return (True, text)
 
     # These two instructions belong to the code-enforced layer, so an arm with
